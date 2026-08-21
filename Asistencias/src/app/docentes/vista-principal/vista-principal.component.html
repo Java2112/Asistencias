@@ -1,0 +1,25 @@
+<div class="contenedor-vista-principal">
+  @if (!claseSeleccionada()) {
+    <!-- Vista del Calendario -->
+    <app-calendario-docente
+      (claseSeleccionada)="seleccionarClase($event)"
+    ></app-calendario-docente>
+  } @else {
+    <!-- Vista de Lista de Asistencia -->
+    <div class="contenedor-asistencia">
+      <div class="barra-superior">
+        <button
+          class="btn-volver"
+          (click)="volverAlCalendario()"
+          aria-label="Volver al calendario"
+        >
+          ⬅ Volver al Calendario
+        </button>
+      </div>
+
+      <app-lista-asistencia
+        [idClase]="claseSeleccionada()!"
+      ></app-lista-asistencia>
+    </div>
+  }
+</div>

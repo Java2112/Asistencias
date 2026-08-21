@@ -6,6 +6,7 @@ import { Calendario } from './admin/calendario/calendario';
 import { Usuarios } from './admin/usuarios/usuarios';
 import { MateriasComponent } from './admin/materias/materias';
 import { Estudiantes } from './estudiantes/estudiantes';
+import { VistaPrincipalComponent } from './docentes/vista-principal/vista-principal.component';
 
 /**
  * Mapa de rutas unificado.
@@ -26,6 +27,8 @@ export const routes: Routes = [
       { path: 'materias', component: MateriasComponent },
     ],
   },
+
+  { path: 'docentes', component: VistaPrincipalComponent },
 
   { path: 'estudiantes', component: Estudiantes },
 

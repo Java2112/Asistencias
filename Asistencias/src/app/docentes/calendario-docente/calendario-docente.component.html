@@ -1,0 +1,24 @@
+<div class="contenedor-calendario">
+  <div class="titulo-seccion">
+    <h1>Calendario de Clases</h1>
+  </div>
+
+  <div class="calendario-wrapper">
+    <full-calendar
+      [options]="opcionesCalendario()"
+    ></full-calendar>
+  </div>
+
+  <div class="clases-listado">
+    <h2>Clases Asignadas</h2>
+    <ul class="lista-clases">
+      @for (clase of clasesAsignadas(); track clase.identificador) {
+        <li class="item-clase">
+          <span class="identificador">{{ clase.identificador }}</span>
+          <span class="titulo">{{ clase.titulo }}</span>
+          <span class="fecha">{{ clase.fechaInicio | date: 'dd/MM/yyyy HH:mm' }}</span>
+        </li>
+      }
+    </ul>
+  </div>
+</div>

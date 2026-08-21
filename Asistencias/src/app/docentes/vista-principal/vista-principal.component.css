@@ -1,0 +1,97 @@
+/* Contenedor principal */
+.contenedor-vista-principal {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #F8FAFF;
+}
+
+/* Contenedor de asistencia */
+.contenedor-asistencia {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Barra superior con botón de volver */
+.barra-superior {
+  padding: 1rem;
+  background-color: white;
+  border-bottom: 2px solid #182987;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Botón volver */
+.btn-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background-color: #182987;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  min-height: 2.75rem;
+}
+
+.btn-volver:hover {
+  background-color: #0d1a4f;
+  box-shadow: 0 4px 12px rgba(24, 41, 135, 0.3);
+}
+
+.btn-volver:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 6px rgba(24, 41, 135, 0.2);
+}
+
+/* Responsividad móvil */
+@media (max-width: 768px) {
+  .barra-superior {
+    padding: 0.75rem;
+  }
+
+  .btn-volver {
+    width: 100%;
+    justify-content: center;
+    padding: 0.875rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Responsividad tablet */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .barra-superior {
+    padding: 1.25rem;
+  }
+
+  .btn-volver {
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
+  }
+}
+
+/* Responsividad desktop */
+@media (min-width: 1024px) {
+  .barra-superior {
+    padding: 1.5rem 2rem;
+  }
+
+  .btn-volver {
+    padding: 0.875rem 1.75rem;
+    font-size: 1.05rem;
+    min-height: 3rem;
+  }
+
+  .btn-volver:hover {
+    transform: translateY(-2px);
+  }
+}

@@ -233,4 +233,22 @@ select:focus {
   outline: none;
   border-color: var(--color-azul-institucional);
   box-shadow: 0 0 0 3px var(--color-azul-claro-apoyo);
+
+/* =========================================================
+   ALIAS DE LA RAMA DOCENTES
+   Esa rama nombró los mismos colores institucionales de otra
+   forma. Se conservan como alias apuntando a los tokens
+   canónicos, para que exista un solo valor por color.
+   ========================================================= */
+
+:root {
+  --azul-institucional: var(--color-azul-institucional);
+  --rojo-institucional: var(--color-rojo-institucional);
+  --azul-claro: var(--color-azul-claro-apoyo);
+  --rojo-claro: var(--color-rojo-claro-apoyo);
+  --fondo-principal: var(--color-fondo);
+
+  --texto-oscuro: #1f2937;
+  --texto-gris: #6b7280;
+  --borde-gris: #e5e7eb;
 }
