@@ -1,0 +1,395 @@
+<div class="estudiantes-container">
+
+  <!-- Toast Notification -->
+  @if (toast()) {
+    <div class="toast-notification" [class]="'toast-' + toast()?.tipo" role="alert">
+      <div class="toast-icon">
+        @if (toast()?.tipo === 'success') {
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+        } @else if (toast()?.tipo === 'error') {
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+        } @else {
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        }
+      </div>
+      <span class="toast-text">{{ toast()?.mensaje }}</span>
+      <button class="toast-close" (click)="toast.set(null)" aria-label="Cerrar">&times;</button>
+    </div>
+  }
+
+  <!-- Header & Student Profile Section -->
+  <header class="app-header">
+    <div class="header-content">
+      <div class="header-branding">
+        <div class="brand-badge">Módulo de Estudiante</div>
+        <h1 class="portal-title">Gestión de Asistencias</h1>
+        <p class="portal-subtitle">Consulta tu horario académico, estado de asistencias, inasistencias y realiza tu auto-marcado de clases.</p>
+      </div>
+
+      <div class="student-profile-card">
+        <div class="profile-avatar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+        </div>
+        <div class="profile-info">
+          <h2 class="profile-name">{{ nombreEstudiante() || 'Portal de Estudiante' }}</h2>
+          <div class="profile-tags">
+            @if (codigoEstudiante()) {
+              <span class="badge-code">ID: {{ codigoEstudiante() }}</span>
+            }
+            @if (periodoActual()) {
+              <span class="badge-period">Periodo {{ periodoActual() }}</span>
+            }
+            <span class="badge-status-online"><span class="dot"></span> Alumno Regular</span>
+          </div>
+        </div>
+        <button class="btn-refresh" (click)="cargarDatosEstudiante()" [disabled]="cargando()" title="Actualizar datos">
+          <svg [class.spin]="cargando()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          <span>{{ cargando() ? 'Sincronizando...' : 'Actualizar' }}</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Filter & Search Toolbar -->
+  <section class="filters-toolbar" aria-label="Barra de filtros">
+    <div class="filters-wrap">
+      <!-- Search Input -->
+      <div class="filter-group search-group">
+        <div class="search-input-wrapper">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input
+            type="text"
+            placeholder="Buscar por materia, profesor, aula..."
+            [ngModel]="busquedaTexto()"
+            (ngModelChange)="busquedaTexto.set($event); actualizarEventosCalendario()"
+            class="search-input"
+          />
+          @if (busquedaTexto()) {
+            <button class="btn-clear-search" (click)="busquedaTexto.set(''); actualizarEventosCalendario()">✕</button>
+          }
+        </div>
+      </div>
+
+      <!-- Filter by Materia -->
+      <div class="filter-group">
+        <label for="filtro-materia" class="filter-label">Materia</label>
+        <select
+          id="filtro-materia"
+          [ngModel]="filtroMateria()"
+          (ngModelChange)="filtroMateria.set($event); actualizarEventosCalendario()"
+          class="filter-select"
+        >
+          <option value="">Todas las materias</option>
+          @for (m of materiasDisponibles(); track m) {
+            <option [value]="m">{{ m }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Filter by Grupo -->
+      <div class="filter-group">
+        <label for="filtro-grupo" class="filter-label">Grupo</label>
+        <select
+          id="filtro-grupo"
+          [ngModel]="filtroGrupo()"
+          (ngModelChange)="filtroGrupo.set($event); actualizarEventosCalendario()"
+          class="filter-select"
+        >
+          <option value="">Todos los grupos</option>
+          @for (g of gruposDisponibles(); track g) {
+            <option [value]="g">{{ g }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Filter by Estado -->
+      <div class="filter-group">
+        <label for="filtro-estado" class="filter-label">Estado Asistencia</label>
+        <select
+          id="filtro-estado"
+          [ngModel]="filtroEstado()"
+          (ngModelChange)="filtroEstado.set($event); actualizarEventosCalendario()"
+          class="filter-select"
+        >
+          <option value="">Todos los estados</option>
+          <option value="presente">🟩 Presente</option>
+          <option value="tardanza">🟨 Tardanza</option>
+          <option value="ausente">🟥 Ausente</option>
+          <option value="justificado">🟦 Justificado</option>
+          <option value="pendiente">⬜ Pendiente / Programado</option>
+        </select>
+      </div>
+
+      <!-- Reset Filters Button -->
+      @if (filtroMateria() || filtroGrupo() || filtroEstado() || busquedaTexto()) {
+        <button class="btn-reset-filters" (click)="limpiarFiltros()" title="Limpiar filtros">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          <span>Limpiar filtros</span>
+        </button>
+      }
+    </div>
+  </section>
+
+  <!-- Navigation View Tabs -->
+  <nav class="view-tabs" aria-label="Vistas del módulo">
+    <button
+      class="tab-btn"
+      [class.active]="activeTab() === 'calendario'"
+      (click)="activeTab.set('calendario')"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+        <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+      </svg>
+      <span>Horario y Calendario</span>
+      <span class="tab-badge">{{ horarioFiltrado().length }}</span>
+    </button>
+
+    <button
+      class="tab-btn"
+      [class.active]="activeTab() === 'faltas'"
+      (click)="activeTab.set('faltas')"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+      </svg>
+      <span>Registro de Inasistencias</span>
+      <span class="tab-badge badge-warning">{{ faltasFiltradas().length }}</span>
+    </button>
+  </nav>
+
+  <!-- TAB 1: INTERACTIVE CALENDAR (FULLCALENDAR) -->
+  @if (activeTab() === 'calendario') {
+    <section class="tab-content calendar-section">
+      <!-- Calendar Color Legend & Info -->
+      <div class="calendar-header-bar">
+        <div class="legend-items">
+          <span class="legend-title">Convenciones de Asistencia:</span>
+          <span class="legend-badge badge-presente"><span class="legend-color bg-presente"></span> Presente (#15803d)</span>
+          <span class="legend-badge badge-tardanza"><span class="legend-color bg-tardanza"></span> Tardanza (#b45309)</span>
+          <span class="legend-badge badge-ausente"><span class="legend-color bg-ausente"></span> Ausente (#b91c1c)</span>
+          <span class="legend-badge badge-justificado"><span class="legend-color bg-justificado"></span> Justificado (#0284c7)</span>
+          <span class="legend-badge badge-pendiente"><span class="legend-color bg-pendiente"></span> Pendiente (#6b7280)</span>
+        </div>
+
+        <div class="calendar-tip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <span>Haz clic en cualquier clase para ver los detalles y marcar tu asistencia</span>
+        </div>
+      </div>
+
+      <!-- Calendar Container -->
+      <div class="calendar-card">
+        @if (isBrowser) {
+          <full-calendar [options]="calendarOptions"></full-calendar>
+        } @else {
+          <div class="calendar-loading-placeholder">
+            <span>Cargando calendario académico...</span>
+          </div>
+        }
+      </div>
+    </section>
+  }
+
+  <!-- TAB 2: ABSENCES LIST (VISTA_FALTAS_ESTUDIANTE) -->
+  @if (activeTab() === 'faltas') {
+    <section class="tab-content faltas-section">
+      <div class="faltas-table-card">
+        <div class="table-header-bar">
+          <div>
+            <h3 class="table-title">Historial de Inasistencias y Faltas</h3>
+            <p class="table-subtitle">Detalle individual proveniente de <code>asistencia.vista_faltas_estudiante</code></p>
+          </div>
+          <div class="table-stats-pill">
+            <span>Total registros: <strong>{{ faltasFiltradas().length }}</strong></span>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Fecha & Hora</th>
+                <th>Materia & Grupo</th>
+                <th>Clase / Tema</th>
+                <th>Estado</th>
+                <th>Tipo de Falta</th>
+                <th>Observación / Justificación</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (falta of faltasFiltradas(); track falta.fecha + falta.materia + falta.hora_inicio) {
+                <tr>
+                  <td>
+                    <div class="td-date-block">
+                      <span class="td-date">{{ falta.fecha }}</span>
+                      <span class="td-time">{{ falta.hora_inicio }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="td-subject-block">
+                      <span class="td-materia">{{ falta.materia }}</span>
+                      <span class="td-group">{{ falta.nombre_grupo }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="td-class-topic">{{ falta.clase || 'Sesión regular' }}</span>
+                  </td>
+                  <td>
+                    <span class="status-pill" [class]="'status-' + falta.estado">
+                      {{ falta.estado | uppercase }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="tipo-falta-badge" [class.justificada]="falta.tipo_falta?.toLowerCase()?.includes('justificada')">
+                      {{ falta.tipo_falta }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="td-obs">
+                      @if (falta.observacion) {
+                        <span>{{ falta.observacion }}</span>
+                      } @else {
+                        <span class="text-dim">Sin observaciones registradas</span>
+                      }
+                    </div>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="6">
+                    <div class="empty-table-state">
+                      <div class="empty-icon success-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                      </div>
+                      <h4>¡Excelente! No tienes inasistencias registradas</h4>
+                      <p>No se encontraron registros de faltas o tardanzas con los filtros actuales.</p>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- EVENT DETAILS MODAL / CHECK-IN DIALOG -->
+  @if (modalDetalleAbierto() && eventoSeleccionado()) {
+    <div class="modal-backdrop" (click)="cerrarModalDetalle()">
+      <div class="modal-dialog" (click)="$event.stopPropagation()">
+        
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <span class="modal-badge-code">{{ eventoSeleccionado()?.codigo_materia }}</span>
+            <h3 class="modal-title">{{ eventoSeleccionado()?.materia }}</h3>
+            <span class="modal-group">{{ eventoSeleccionado()?.nombre_grupo }} &bull; Periodo {{ eventoSeleccionado()?.periodo }}</span>
+          </div>
+          <button class="btn-modal-close" (click)="cerrarModalDetalle()" aria-label="Cerrar">&times;</button>
+        </div>
+
+        <div class="modal-body">
+          <!-- Class Status Banner -->
+          <div class="modal-status-banner" [style.border-left-color]="obtenerColorPorEstado(eventoSeleccionado()?.estado_asistencia || eventoSeleccionado()?.estado)">
+            <div class="banner-labels">
+              <span class="banner-title">Estado de Asistencia</span>
+              <span class="banner-state" [style.color]="obtenerColorPorEstado(eventoSeleccionado()?.estado_asistencia || eventoSeleccionado()?.estado)">
+                {{ (eventoSeleccionado()?.estado_asistencia || eventoSeleccionado()?.estado || 'pendiente') | uppercase }}
+              </span>
+            </div>
+            <div class="banner-badge-status" [style.background-color]="obtenerColorPorEstado(eventoSeleccionado()?.estado_asistencia || eventoSeleccionado()?.estado)">
+              {{ eventoSeleccionado()?.estado_asistencia ? 'Registrado' : (eventoSeleccionado()?.estado | uppercase) }}
+            </div>
+          </div>
+
+          <!-- Session Metadata Grid -->
+          <div class="modal-meta-grid">
+            <div class="meta-item">
+              <span class="meta-label">Fecha Programada</span>
+              <span class="meta-val">{{ formatearFechaLegible(eventoSeleccionado()?.fecha || '') }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Horario</span>
+              <span class="meta-val">{{ eventoSeleccionado()?.hora_inicio }} - {{ eventoSeleccionado()?.hora_fin }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Aula / Salón</span>
+              <span class="meta-val highlight">{{ eventoSeleccionado()?.aula }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Ubicación</span>
+              <span class="meta-val">{{ eventoSeleccionado()?.ubicacion }}</span>
+            </div>
+            <div class="meta-item col-span-2">
+              <span class="meta-label">Docente a Cargo</span>
+              <span class="meta-val">{{ eventoSeleccionado()?.profesor }} ({{ eventoSeleccionado()?.codigo_profesor }})</span>
+            </div>
+          </div>
+
+          @if (eventoSeleccionado()?.titulo || eventoSeleccionado()?.descripcion) {
+            <div class="modal-topic-box">
+              <h5 class="topic-title">{{ eventoSeleccionado()?.titulo }}</h5>
+              @if (eventoSeleccionado()?.descripcion) {
+                <p class="topic-desc">{{ eventoSeleccionado()?.descripcion }}</p>
+              }
+            </div>
+          }
+
+          <!-- Check-in Self Action -->
+          @if (esClaseDisponibleHoy(eventoSeleccionado()!)) {
+            <div class="modal-checkin-panel">
+              <h4 class="checkin-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Auto-Marcado de Asistencia (En Clase)
+              </h4>
+              <p class="checkin-sub">Confirma tu asistencia para la sesión de hoy. Quedará registrada inmediatamente en el sistema.</p>
+
+              <div class="checkin-obs-input">
+                <label for="checkin-obs">Observación opcional:</label>
+                <input
+                  id="checkin-obs"
+                  type="text"
+                  placeholder="Ej: Ingreso puntual a laboratorio presencial"
+                  [ngModel]="observacionCheckIn()"
+                  (ngModelChange)="observacionCheckIn.set($event)"
+                  class="input-obs"
+                />
+              </div>
+
+              <div class="checkin-action-buttons">
+                <button
+                  class="btn-action-presente"
+                  (click)="ejecutarCheckIn(eventoSeleccionado()!, 'presente')"
+                  [disabled]="marcandoAsistencia()"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                  <span>{{ marcandoAsistencia() ? 'Marcando...' : 'Marcar PRESENTE' }}</span>
+                </button>
+              </div>
+            </div>
+          } @else if (eventoSeleccionado()?.estado_asistencia && eventoSeleccionado()?.estado_asistencia !== 'pendiente') {
+            <div class="already-checked-notice">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span>Tu asistencia ya fue registrada como <strong>{{ eventoSeleccionado()?.estado_asistencia | uppercase }}</strong> para esta sesión.</span>
+            </div>
+          }
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-modal-secondary" (click)="cerrarModalDetalle()">Cerrar</button>
+        </div>
+
+      </div>
+    </div>
+  }
+
+</div>
