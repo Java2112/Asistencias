@@ -1,20 +1,44 @@
-<main class="login-shell">
-<section class="brand-panel" aria-label="Información de la plataforma">
-<div class="brand-copy"><span class="eyebrow">APRENDER Y CRECER</span><h1>Tu asistencia<br>abre caminos.</h1><p>Organiza tu jornada académica en un solo lugar, de forma simple, clara y segura.</p></div>
-<div class="team-proof"><div class="avatars" aria-hidden="true"><span>AM</span><span>JL</span><span>SC</span><span>+</span></div><p><strong>Más de 1.200 estudiantes</strong> ya organizan su asistencia con nosotros.</p></div>
-</section>
-<section class="form-panel"><div class="form-container">
-<div class="welcome"><span class="mobile-brand">asistencias<span>.</span></span><h2>¡Bienvenido de nuevo!</h2><p>Ingresa tus datos para continuar.</p></div>
-<form (ngSubmit)="submit()" #loginForm="ngForm" novalidate>
-<label for="email">Correo electrónico</label>
-<div class="input-wrap" [class.invalid]="submitted() && !email.valid"><span class="input-icon">@</span><input id="email" name="email" type="email" [(ngModel)]="credentials.email" #email="ngModel" required email autocomplete="email" placeholder="nombre@institucion.edu"></div>
-@if (submitted() && !email.valid) { <p class="field-error">Ingresa un correo electrónico válido.</p> }
-<div class="label-row"><label for="password">Contraseña</label><a href="#" (click)="forgotPassword($event)">¿Olvidaste tu contraseña?</a></div>
-<div class="input-wrap" [class.invalid]="submitted() && !password.valid"><span class="input-icon">#</span><input id="password" name="password" [type]="showPassword() ? 'text' : 'password'" [(ngModel)]="credentials.password" #password="ngModel" required minlength="6" autocomplete="current-password" placeholder="Ingresa tu contraseña"><button class="toggle-password" type="button" (click)="togglePassword()">{{ showPassword() ? 'Ocultar' : 'Mostrar' }}</button></div>
-@if (submitted() && !password.valid) { <p class="field-error">La contraseña debe tener al menos 6 caracteres.</p> }
-<label class="check-row"><input type="checkbox" name="remember" [(ngModel)]="credentials.remember"><span class="checkbox-ui">x</span>Recordarme en este dispositivo</label>
-<button class="submit" type="submit">Iniciar sesión <span aria-hidden="true">--&gt;</span></button>
-@if (message()) { <p class="form-message" role="status">{{ message() }}</p> }
-</form><p class="support">¿Necesitas ayuda? <a href="mailto:soporte@asistencias.com">Contacta a soporte</a></p>
-</div><p class="copyright">© 2026 Asistencias. Todos los derechos reservados.</p></section>
-</main>
+@if (sesion(); as usuario) {
+  <main class="dashboard-shell">
+    <section class="dashboard-card">
+      <span class="eyebrow">SESIÓN DE PRUEBA ACTIVA</span>
+      <h1>¡Hola, {{ usuario.nombre }}!</h1>
+      <p>Ingresaste correctamente. Este estado queda guardado en el navegador para poder probar la integración con las interfaces de cada rol.</p>
+      <div class="role-box"><span>Rol activo</span><strong>{{ rolActivo() }}</strong></div>
+      <label class="role-selector" for="rol">Cambiar rol para la demostración
+        <select id="rol" [value]="rolActivo()" (change)="cambiarRol($any($event.target).value)">
+          <option value="Administrador">Administrador</option>
+          <option value="Profesor">Profesor</option>
+          <option value="Estudiante">Estudiante</option>
+        </select>
+      </label>
+      <p class="role-note">Cuando se integren las ramas, este selector dirigirá a la interfaz correspondiente.</p>
+      <button class="logout" type="button" (click)="cerrarSesion()">Cerrar sesión</button>
+    </section>
+  </main>
+} @else {
+  <main class="login-shell">
+    <section class="brand-panel" aria-label="Información de la plataforma">
+      <div class="brand-copy"><span class="eyebrow">APRENDER Y CRECER</span><h1>Tu asistencia<br>abre caminos.</h1><p>Organiza tu jornada académica en un solo lugar, de forma simple, clara y segura.</p></div>
+      <div class="team-proof"><div class="avatars" aria-hidden="true"><span>AM</span><span>JL</span><span>SC</span><span>+</span></div><p><strong>Más de 1.200 estudiantes</strong> ya organizan su asistencia con nosotros.</p></div>
+    </section>
+    <section class="form-panel"><div class="form-container">
+      <div class="welcome"><span class="mobile-brand">asistencias<span>.</span></span><h2>¡Bienvenido de nuevo!</h2><p>Ingresa tus datos para continuar.</p></div>
+      <form (ngSubmit)="submit()" #loginForm="ngForm" novalidate>
+        <label for="email">Correo electrónico</label>
+        <div class="input-wrap" [class.invalid]="submitted() && !email.valid"><span class="input-icon">@</span><input id="email" name="email" type="email" [(ngModel)]="credentials.email" #email="ngModel" required email autocomplete="email" placeholder="nombre@institucion.edu"></div>
+        @if (submitted() && !email.valid) { <p class="field-error">Ingresa un correo electrónico válido.</p> }
+        <div class="label-row"><label for="password">Contraseña</label><a href="#" (click)="recuperarContrasena($event)">¿Olvidaste tu contraseña?</a></div>
+        <div class="input-wrap" [class.invalid]="submitted() && !password.valid"><span class="input-icon">#</span><input id="password" name="password" [type]="showPassword() ? 'text' : 'password'" [(ngModel)]="credentials.password" #password="ngModel" required minlength="6" autocomplete="current-password" placeholder="Ingresa tu contraseña"><button class="toggle-password" type="button" (click)="togglePassword()">{{ showPassword() ? 'Ocultar' : 'Mostrar' }}</button></div>
+        @if (submitted() && !password.valid) { <p class="field-error">La contraseña debe tener al menos 6 caracteres.</p> }
+        <label class="check-row"><input type="checkbox" name="remember" [(ngModel)]="credentials.remember"><span class="checkbox-ui">x</span>Recordarme en este dispositivo</label>
+        <button class="submit" type="submit">Iniciar sesión <span aria-hidden="true">--&gt;</span></button>
+        @if (message()) { <p class="form-message" role="status">{{ message() }}</p> }
+      </form>
+      <section class="demo-accounts" aria-label="Cuentas de prueba"><h3>Accesos de prueba</h3><p>Selecciona una cuenta para cargar sus credenciales.</p>
+        @for (cuenta of usuariosDemo; track cuenta.correo) { <button type="button" class="demo-account" (click)="usarUsuario(cuenta)"><span class="account-initial">{{ cuenta.nombre.charAt(0) }}</span><span><strong>{{ cuenta.rol }}</strong><small>{{ cuenta.correo }}</small></span><span aria-hidden="true">→</span></button> }
+      </section>
+      <p class="support">¿Necesitas ayuda? <a href="mailto:soporte@asistencias.com">Contacta a soporte</a></p>
+    </div><p class="copyright">© 2026 Asistencias. Todos los derechos reservados.</p></section>
+  </main>
+}
