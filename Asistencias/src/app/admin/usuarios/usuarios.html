@@ -1,0 +1,368 @@
+<div class="usuarios-container">
+
+  <h1>Usuarios</h1>
+
+  <div class="formulario">
+
+    <h2>
+      @if (editando) {
+        Editar usuario
+      } @else {
+        Crear usuario
+      }
+    </h2>
+
+    <label for="tipoUsuario">
+      Tipo de usuario
+    </label>
+
+    <select
+      id="tipoUsuario"
+      [(ngModel)]="tipoUsuario"
+      (change)="cambiarTipoUsuario()"
+    >
+
+      <option value="profesor">
+        Profesor
+      </option>
+
+      <option value="estudiante">
+        Estudiante
+      </option>
+
+    </select>
+
+    <label for="nombre">
+      Nombre completo
+    </label>
+
+    <input
+      id="nombre"
+      type="text"
+      placeholder="Nombre completo"
+      [(ngModel)]="nombre"
+    />
+
+    <label for="correo">
+      Correo electrónico
+    </label>
+
+    <input
+      id="correo"
+      type="email"
+      placeholder="Correo electrónico"
+      [(ngModel)]="correo"
+    />
+
+    @if (tipoUsuario === 'profesor') {
+
+      <div class="campo-materias">
+
+        <label>
+          Materias que dicta
+        </label>
+
+        <p class="ayuda">
+          Selecciona las materias que este profesor puede dictar.
+        </p>
+
+        <div class="materias-checkboxes">
+
+          @for (
+            materia of materiasDisponibles;
+            track materia.id
+          ) {
+
+            <label class="materia-checkbox">
+
+              <input
+                type="checkbox"
+                [checked]="materiaSeleccionada(materia.id)"
+                (change)="cambiarMateria(materia.id)"
+              />
+
+              <span>
+                {{ materia.nombre }}
+              </span>
+
+            </label>
+
+          }
+
+        </div>
+
+      </div>
+
+    }
+
+    @if (tipoUsuario === 'estudiante') {
+
+      <label for="semestre">
+        Semestre
+      </label>
+
+      <input
+        id="semestre"
+        type="number"
+        min="1"
+        [(ngModel)]="semestre"
+      />
+
+      <div class="campo-materias">
+
+        <label>
+          Materias que cursa
+        </label>
+
+        <p class="ayuda">
+          Selecciona las materias que cursa este estudiante.
+        </p>
+
+        <div class="materias-checkboxes">
+
+          @for (
+            materia of materiasDisponibles;
+            track materia.id
+          ) {
+
+            <label class="materia-checkbox">
+
+              <input
+                type="checkbox"
+                [checked]="materiaSeleccionada(materia.id)"
+                (change)="cambiarMateria(materia.id)"
+              />
+
+              <span>
+                {{ materia.nombre }}
+              </span>
+
+            </label>
+
+          }
+
+        </div>
+
+      </div>
+
+    }
+
+    <div class="acciones-formulario">
+
+      @if (!editando) {
+
+        <button
+          type="button"
+          (click)="crearUsuario()"
+        >
+          Crear usuario
+        </button>
+
+      } @else {
+
+        <button
+          type="button"
+          (click)="guardarCambios()"
+        >
+          Guardar cambios
+        </button>
+
+        <button
+          type="button"
+          (click)="cancelarEdicion()"
+        >
+          Cancelar
+        </button>
+
+      }
+
+    </div>
+
+  </div>
+
+  <section class="seccion">
+
+    <h2>Profesores</h2>
+
+    @if (profesores.length === 0) {
+
+      <p class="sin-resultados">
+        No hay profesores registrados.
+      </p>
+
+    } @else {
+
+      @for (
+        profesor of profesores;
+        track profesor.id
+      ) {
+
+        <div class="usuario">
+
+          <div class="informacion-usuario">
+
+            <h3>
+              {{ profesor.nombre }}
+            </h3>
+
+            <p>
+              {{ profesor.correo }}
+            </p>
+
+            <div class="materias-profesor">
+
+              <strong>
+                Materias:
+              </strong>
+
+              @if (profesor.materias.length === 0) {
+
+                <span class="sin-materias">
+                  Sin materias asignadas
+                </span>
+
+              } @else {
+
+                <div class="materias-tags">
+
+                  @for (
+                    materia of profesor.materias;
+                    track materia.id
+                  ) {
+
+                    <span class="materia-tag">
+                      {{ materia.nombre }}
+                    </span>
+
+                  }
+
+                </div>
+
+              }
+
+            </div>
+
+          </div>
+
+          <div class="acciones">
+
+            <button
+              type="button"
+              (click)="editarProfesor(profesor)"
+            >
+              Editar
+            </button>
+
+            <button
+              type="button"
+              (click)="eliminarProfesor(profesor.id)"
+            >
+              Eliminar
+            </button>
+
+          </div>
+
+        </div>
+
+      }
+
+    }
+
+  </section>
+
+  <section class="seccion">
+
+    <h2>Estudiantes</h2>
+
+    @if (estudiantes.length === 0) {
+
+      <p class="sin-resultados">
+        No hay estudiantes registrados.
+      </p>
+
+    } @else {
+
+      @for (
+        estudiante of estudiantes;
+        track estudiante.id
+      ) {
+
+        <div class="usuario">
+
+          <div class="informacion-usuario">
+
+            <h3>
+              {{ estudiante.nombre }}
+            </h3>
+
+            <p>
+              {{ estudiante.correo }}
+            </p>
+
+            <p>
+              <strong>Semestre:</strong>
+              {{ estudiante.semestre }}
+            </p>
+
+            <div class="materias-profesor">
+
+              <strong>
+                Materias:
+              </strong>
+
+              @if (estudiante.materias.length === 0) {
+
+                <span class="sin-materias">
+                  Sin materias asignadas
+                </span>
+
+              } @else {
+
+                <div class="materias-tags">
+
+                  @for (
+                    materia of estudiante.materias;
+                    track materia.id
+                  ) {
+
+                    <span class="materia-tag">
+                      {{ materia.nombre }}
+                    </span>
+
+                  }
+
+                </div>
+
+              }
+
+            </div>
+
+          </div>
+
+          <div class="acciones">
+
+            <button
+              type="button"
+              (click)="editarEstudiante(estudiante)"
+            >
+              Editar
+            </button>
+
+            <button
+              type="button"
+              (click)="eliminarEstudiante(estudiante.id)"
+            >
+              Eliminar
+            </button>
+
+          </div>
+
+        </div>
+
+      }
+
+    }
+
+  </section>
+
+</div>

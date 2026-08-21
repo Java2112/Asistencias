@@ -1,0 +1,171 @@
+/* ========================================= */
+/* CONTENEDOR PRINCIPAL */
+/* ========================================= */
+
+.admin-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #F8FAFF;
+}
+
+
+/* ========================================= */
+/* SIDEBAR */
+/* ========================================= */
+
+.sidebar {
+  width: 240px;
+
+  padding: 20px;
+
+  background-color: #182987;
+
+  color: white;
+
+  box-sizing: border-box;
+
+  flex-shrink: 0;
+}
+
+
+/* ========================================= */
+/* LOGO */
+/* ========================================= */
+
+.logo {
+  margin-bottom: 30px;
+
+  padding-bottom: 20px;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+
+.logo h2 {
+  margin: 0;
+
+  color: white;
+
+  font-size: 22px;
+}
+
+
+/* ========================================= */
+/* NAVEGACIÓN */
+/* ========================================= */
+
+nav {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+}
+
+
+nav a {
+  padding: 12px 14px;
+
+  color: white;
+
+  text-decoration: none;
+
+  border-radius: 8px;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+
+  font-size: 15px;
+}
+
+
+nav a:hover {
+  background-color: #EAF0FF;
+
+  color: #182987;
+}
+
+
+/* ========================================= */
+/* ENLACE ACTIVO */
+/* ========================================= */
+
+nav a.active {
+  background-color: #EAF0FF;
+
+  color: #182987;
+
+  font-weight: 600;
+}
+
+
+/* ========================================= */
+/* CONTENIDO */
+/* ========================================= */
+
+.content {
+  flex: 1;
+
+  padding: 30px;
+
+  background-color: #F8FAFF;
+
+  box-sizing: border-box;
+
+  min-width: 0;
+}
+
+
+/* ========================================= */
+/* BOTONES / ACCIONES DESTACADAS */
+/* ========================================= */
+
+nav a:last-child {
+  margin-top: 10px;
+}
+
+
+/* ========================================= */
+/* RESPONSIVE */
+/* ========================================= */
+
+@media (max-width: 768px) {
+
+  .admin-container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+
+    padding: 15px;
+  }
+
+  .logo {
+    margin-bottom: 15px;
+
+    padding-bottom: 15px;
+  }
+
+  nav {
+    flex-direction: row;
+
+    flex-wrap: wrap;
+
+    gap: 6px;
+  }
+
+  nav a {
+    flex: 1;
+
+    min-width: 120px;
+
+    text-align: center;
+  }
+
+  .content {
+    padding: 20px;
+  }
+
+}

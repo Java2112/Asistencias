@@ -1,0 +1,264 @@
+.usuarios-container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 20px;
+  color: #182987;
+}
+
+.usuarios-container h1 {
+  margin-bottom: 25px;
+  color: #182987;
+}
+
+.formulario {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  border: 1px solid #EAF0FF;
+  box-shadow: 0 3px 10px rgba(24, 41, 135, 0.06);
+}
+
+.formulario h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #182987;
+}
+
+.formulario label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+  color: #182987;
+}
+
+.formulario input,
+.formulario select {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px;
+  margin-bottom: 18px;
+  border: 1px solid #ccd5f5;
+  border-radius: 7px;
+  background: white;
+  color: #333;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.formulario input:focus,
+.formulario select:focus {
+  outline: none;
+  border-color: #182987;
+  box-shadow: 0 0 0 3px #EAF0FF;
+}
+
+.campo-materias {
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.campo-materias > label {
+  margin-bottom: 5px;
+}
+
+.ayuda {
+  color: #666;
+  font-size: 14px;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.materias-checkboxes {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(180px, 1fr)
+  );
+  gap: 10px;
+}
+
+.materia-checkbox {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid #ccd5f5;
+  border-radius: 7px;
+  cursor: pointer;
+  font-weight: normal !important;
+  background: #F8FAFF;
+  transition: all 0.2s ease;
+}
+
+.materia-checkbox:hover {
+  background: #EAF0FF;
+  border-color: #182987;
+}
+
+.materia-checkbox input {
+  width: auto;
+  margin: 0;
+  accent-color: #182987;
+}
+
+.acciones-formulario {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+button {
+  border: none;
+  padding: 10px 18px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.acciones-formulario button:first-child {
+  background: #182987;
+  color: white;
+}
+
+.acciones-formulario button:first-child:hover {
+  background: #101d68;
+}
+
+.acciones-formulario button:last-child {
+  background: #FFF0F2;
+  color: #ED1736;
+}
+
+.acciones-formulario button:last-child:hover {
+  background: #ED1736;
+  color: white;
+}
+
+.seccion {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  border: 1px solid #EAF0FF;
+  box-shadow: 0 3px 10px rgba(24, 41, 135, 0.06);
+}
+
+.seccion h2 {
+  margin-top: 0;
+  color: #182987;
+}
+
+.usuario {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 0;
+  border-bottom: 1px solid #EAF0FF;
+}
+
+.usuario:last-child {
+  border-bottom: none;
+}
+
+.informacion-usuario {
+  flex: 1;
+}
+
+.informacion-usuario h3 {
+  margin: 0 0 5px;
+  color: #182987;
+}
+
+.informacion-usuario p {
+  margin: 5px 0;
+  color: #666;
+}
+
+.materias-profesor {
+  margin-top: 12px;
+}
+
+.materias-profesor strong {
+  color: #182987;
+}
+
+.materias-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.materia-tag {
+  display: inline-block;
+  padding: 6px 11px;
+  background: #EAF0FF;
+  color: #182987;
+  border: 1px solid #d6defb;
+  border-radius: 15px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.sin-materias {
+  color: #888;
+  margin-left: 8px;
+}
+
+.sin-resultados {
+  color: #666;
+  padding: 15px 0;
+}
+
+.acciones {
+  display: flex;
+  gap: 10px;
+}
+
+.acciones button:first-child {
+  background: #EAF0FF;
+  color: #182987;
+  border: 1px solid #d6defb;
+}
+
+.acciones button:first-child:hover {
+  background: #182987;
+  color: white;
+}
+
+.acciones button:last-child {
+  background: #FFF0F2;
+  color: #ED1736;
+  border: 1px solid #ffd5dc;
+}
+
+.acciones button:last-child:hover {
+  background: #ED1736;
+  color: white;
+}
+
+@media (max-width: 700px) {
+  .usuarios-container {
+    padding: 15px;
+  }
+
+  .usuario {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .acciones {
+    width: 100%;
+  }
+
+  .acciones button {
+    flex: 1;
+  }
+
+  .materias-checkboxes {
+    grid-template-columns: 1fr;
+  }
+}

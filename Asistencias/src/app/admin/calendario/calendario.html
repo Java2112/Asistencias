@@ -1,0 +1,295 @@
+<div class="calendario-container">
+
+  <h1>Calendario</h1>
+
+  <p class="descripcion">
+    Administra los horarios, materias, profesores y aulas.
+  </p>
+
+  <div class="filtro">
+
+    <label for="profesorFiltro">
+      Filtrar calendario por profesor
+    </label>
+
+    <div class="filtro-controles">
+
+      <select
+        id="profesorFiltro"
+        [(ngModel)]="profesorFiltroId"
+        (ngModelChange)="filtrarPorProfesor()"
+      >
+
+        <option [ngValue]="null">
+          Todos los profesores
+        </option>
+
+        @for (profesor of profesores; track profesor.id) {
+
+          <option [ngValue]="profesor.id">
+            {{ profesor.nombre }}
+          </option>
+
+        }
+
+      </select>
+
+
+      @if (profesorFiltroId !== null) {
+
+        <button
+          type="button"
+          (click)="profesorFiltroId = null; filtrarPorProfesor()"
+        >
+          Mostrar todos
+        </button>
+
+      }
+
+    </div>
+
+  </div>
+
+  <div class="calendar-container">
+
+    <full-calendar
+      [options]="calendarOptions">
+    </full-calendar>
+
+  </div>
+
+  <div class="formulario">
+
+    <h2>
+
+      @if (editando) {
+        Editar horario
+      } @else {
+        Crear horario
+      }
+
+    </h2>
+
+    <label for="fecha">
+      Fecha
+    </label>
+
+    <input
+      id="fecha"
+      type="date"
+      [(ngModel)]="fecha"
+    />
+
+    <label for="horaInicio">
+      Hora de inicio
+    </label>
+
+    <input
+      id="horaInicio"
+      type="time"
+      [(ngModel)]="horaInicio"
+    />
+
+    <label for="horaFin">
+      Hora de finalización
+    </label>
+
+    <input
+      id="horaFin"
+      type="time"
+      [(ngModel)]="horaFin"
+    />
+
+    <label for="aula">
+      Aula
+    </label>
+
+    <input
+      id="aula"
+      type="text"
+      placeholder="Ej: Aula 101"
+      [(ngModel)]="aula"
+    />
+
+    <label for="materia">
+      Materia
+    </label>
+
+    <select
+      id="materia"
+      [(ngModel)]="materiaSeleccionadaId"
+      (ngModelChange)="cambiarMateria()"
+    >
+
+      <option [ngValue]="null">
+        Selecciona una materia
+      </option>
+
+      @for (materia of materiasDisponibles; track materia.id) {
+
+        <option [ngValue]="materia.id">
+          {{ materia.nombre }}
+        </option>
+
+      }
+
+    </select>
+
+    <label for="profesor">
+      Profesor
+    </label>
+
+    <select
+      id="profesor"
+      [(ngModel)]="profesorSeleccionadoId"
+      [disabled]="
+        materiaSeleccionadaId === null ||
+        profesoresDisponibles.length === 0
+      "
+    >
+
+      <option [ngValue]="null">
+
+        @if (materiaSeleccionadaId === null) {
+
+          Selecciona primero una materia
+
+        } @else {
+
+          Selecciona un profesor
+
+        }
+
+      </option>
+
+
+      @for (profesor of profesoresDisponibles; track profesor.id) {
+
+        <option [ngValue]="profesor.id">
+          {{ profesor.nombre }}
+        </option>
+
+      }
+
+    </select>
+
+    @if (
+      materiaSeleccionadaId !== null &&
+      profesoresDisponibles.length === 0
+    ) {
+
+      <p class="mensaje-error">
+        No hay profesores asignados a esta materia.
+      </p>
+
+    }
+
+    <div class="acciones-formulario">
+
+      @if (!editando) {
+
+        <button
+          type="button"
+          (click)="crearHorario()"
+        >
+          Crear horario
+        </button>
+
+      } @else {
+
+        <button
+          type="button"
+          (click)="guardarCambios()"
+        >
+          Guardar cambios
+        </button>
+
+        <button
+          type="button"
+          (click)="cancelarEdicion()"
+        >
+          Cancelar
+        </button>
+
+      }
+
+    </div>
+
+  </div>
+
+  <div class="lista">
+
+    <h2>
+      Horarios registrados
+    </h2>
+
+
+    @if (horarios.length === 0) {
+
+      <p>
+        No hay horarios registrados.
+      </p>
+
+    } @else {
+
+      @for (horario of horarios; track horario.id) {
+
+        <div class="horario">
+
+          <div class="informacion-horario">
+
+            <h3>
+              {{ horario.materia.nombre }}
+            </h3>
+
+            <p>
+              <strong>Profesor:</strong>
+              {{ horario.profesor.nombre }}
+            </p>
+
+            <p>
+              <strong>Fecha:</strong>
+              {{ horario.fecha }}
+            </p>
+
+            <p>
+              <strong>Horario:</strong>
+              {{ horario.horaInicio }}
+              -
+              {{ horario.horaFin }}
+            </p>
+
+            <p>
+              <strong>Aula:</strong>
+              {{ horario.aula }}
+            </p>
+
+          </div>
+
+          <div class="acciones">
+
+            <button
+              type="button"
+              (click)="editarHorario(horario)"
+            >
+              Editar
+            </button>
+
+            <button
+              type="button"
+              (click)="eliminarHorario(horario.id)"
+            >
+              Eliminar
+            </button>
+
+          </div>
+
+        </div>
+
+      }
+
+    }
+
+  </div>
+
+</div>
