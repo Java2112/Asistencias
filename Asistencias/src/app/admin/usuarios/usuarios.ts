@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
 
@@ -21,6 +21,7 @@ import { Materia } from '../../models/materia';
 export class Usuarios implements OnInit {
 
   private readonly adminService = inject(AdminService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   materiasDisponibles: Materia[] = [];
 
@@ -107,8 +108,12 @@ export class Usuarios implements OnInit {
 
           });
 
+        this.cdr.detectChanges();
       },
-      error: () => this.mensaje = 'No fue posible cargar el directorio.'
+      error: () => {
+        this.mensaje = 'No fue posible cargar el directorio.';
+        this.cdr.detectChanges();
+      }
     });
 
   }
@@ -192,7 +197,10 @@ export class Usuarios implements OnInit {
       id_rol: rol.id_rol
     }).subscribe({
       next: (creado) => this.asignarMaterias(creado.id_usuario),
-      error: (error) => this.mensaje = error.error?.mensaje ?? 'No fue posible crear el usuario.'
+      error: (error) => {
+        this.mensaje = error.error?.mensaje ?? 'No fue posible crear el usuario.';
+        this.cdr.detectChanges();
+      }
     });
 
   }
@@ -224,7 +232,10 @@ export class Usuarios implements OnInit {
 
       forkJoin(creaciones).subscribe({
         next: () => this.terminar(),
-        error: (error) => this.mensaje = error.error?.mensaje ?? 'El usuario se creó, pero no fue posible asignar las materias.'
+        error: (error) => {
+          this.mensaje = error.error?.mensaje ?? 'El usuario se creó, pero no fue posible asignar las materias.';
+          this.cdr.detectChanges();
+        }
       });
 
     } else {
@@ -242,7 +253,10 @@ export class Usuarios implements OnInit {
 
       forkJoin(inscripciones).subscribe({
         next: () => this.terminar(),
-        error: (error) => this.mensaje = error.error?.mensaje ?? 'El usuario se creó, pero no fue posible inscribirlo.'
+        error: (error) => {
+          this.mensaje = error.error?.mensaje ?? 'El usuario se creó, pero no fue posible inscribirlo.';
+          this.cdr.detectChanges();
+        }
       });
 
     }
@@ -326,7 +340,10 @@ export class Usuarios implements OnInit {
         this.cancelarEdicion();
         this.cargarTodo();
       },
-      error: (error) => this.mensaje = error.error?.mensaje ?? 'No fue posible guardar los cambios.'
+      error: (error) => {
+        this.mensaje = error.error?.mensaje ?? 'No fue posible guardar los cambios.';
+        this.cdr.detectChanges();
+      }
     });
 
   }
@@ -355,7 +372,10 @@ export class Usuarios implements OnInit {
 
     this.adminService.desactivarUsuario(id).subscribe({
       next: () => this.cargarTodo(),
-      error: (error) => this.mensaje = error.error?.mensaje ?? 'No fue posible eliminar el usuario.'
+      error: (error) => {
+        this.mensaje = error.error?.mensaje ?? 'No fue posible eliminar el usuario.';
+        this.cdr.detectChanges();
+      }
     });
 
   }

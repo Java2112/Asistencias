@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 
 import { AdminService } from '../../services/admin.service';
 import { Profesor } from '../../models/profesor';
@@ -19,6 +19,7 @@ import { Horario } from '../../models/horario';
 export class Dashboard implements OnInit {
 
   private readonly adminService = inject(AdminService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   materiasDisponibles: Materia[] = [];
 
@@ -48,6 +49,7 @@ export class Dashboard implements OnInit {
             materia.creditos
           )
         );
+        this.cdr.detectChanges();
       }
     });
 
@@ -71,6 +73,7 @@ export class Dashboard implements OnInit {
             persona.semestre ?? 1
           ));
 
+        this.cdr.detectChanges();
       }
     });
 
@@ -87,6 +90,7 @@ export class Dashboard implements OnInit {
             new Profesor(0, evento.profesor, '')
           )
         );
+        this.cdr.detectChanges();
       }
     });
 

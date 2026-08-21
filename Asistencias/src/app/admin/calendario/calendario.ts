@@ -1,5 +1,5 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, OnInit, inject, PLATFORM_ID } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject, PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
 
@@ -32,6 +32,7 @@ export class Calendario implements OnInit {
 
   private readonly adminService = inject(AdminService);
   private readonly auth = inject(AuthService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
@@ -164,7 +165,10 @@ export class Calendario implements OnInit {
         this.actualizarCalendario();
 
       },
-      error: () => this.mensaje = 'No fue posible cargar el calendario.'
+      error: () => {
+        this.mensaje = 'No fue posible cargar el calendario.';
+        this.cdr.detectChanges();
+      }
     });
 
   }
@@ -257,6 +261,8 @@ export class Calendario implements OnInit {
       events: this.obtenerEventos()
 
     };
+
+    this.cdr.detectChanges();
   }
 
   crearHorario(): void {
@@ -312,7 +318,10 @@ export class Calendario implements OnInit {
         this.limpiarFormulario();
         this.cargarDatos();
       },
-      error: (error) => this.mensaje = error.error?.mensaje ?? 'No fue posible crear el horario.'
+      error: (error) => {
+        this.mensaje = error.error?.mensaje ?? 'No fue posible crear el horario.';
+        this.cdr.detectChanges();
+      }
     });
 
   }
@@ -390,7 +399,10 @@ export class Calendario implements OnInit {
         this.cancelarEdicion();
         this.cargarDatos();
       },
-      error: (error) => this.mensaje = error.error?.mensaje ?? 'No fue posible guardar los cambios.'
+      error: (error) => {
+        this.mensaje = error.error?.mensaje ?? 'No fue posible guardar los cambios.';
+        this.cdr.detectChanges();
+      }
     });
 
   }
@@ -399,7 +411,10 @@ export class Calendario implements OnInit {
 
     this.adminService.eliminarEvento(id).subscribe({
       next: () => this.cargarDatos(),
-      error: (error) => this.mensaje = error.error?.mensaje ?? 'No fue posible eliminar el horario.'
+      error: (error) => {
+        this.mensaje = error.error?.mensaje ?? 'No fue posible eliminar el horario.';
+        this.cdr.detectChanges();
+      }
     });
 
   }

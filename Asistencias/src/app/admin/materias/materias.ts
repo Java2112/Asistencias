@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { AdminService } from '../../services/admin.service';
@@ -15,6 +15,7 @@ import { Materia } from '../../models/materia';
 export class MateriasComponent implements OnInit {
 
   private readonly adminService = inject(AdminService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   materias: Materia[] = [];
 
@@ -44,8 +45,12 @@ export class MateriasComponent implements OnInit {
         this.codigosPorId = new Map(
           materias.map(materia => [materia.id_materia, materia.codigo_materia])
         );
+        this.cdr.detectChanges();
       },
-      error: () => this.mensaje = 'No fue posible cargar las materias.'
+      error: () => {
+        this.mensaje = 'No fue posible cargar las materias.';
+        this.cdr.detectChanges();
+      }
     });
   }
 
@@ -70,7 +75,10 @@ export class MateriasComponent implements OnInit {
         this.limpiarFormulario();
         this.cargarMaterias();
       },
-      error: (error) => this.mensaje = error.error?.mensaje ?? 'No fue posible crear la materia.'
+      error: (error) => {
+        this.mensaje = error.error?.mensaje ?? 'No fue posible crear la materia.';
+        this.cdr.detectChanges();
+      }
     });
 
   }
@@ -79,7 +87,10 @@ export class MateriasComponent implements OnInit {
 
     this.adminService.desactivarMateria(id).subscribe({
       next: () => this.cargarMaterias(),
-      error: (error) => this.mensaje = error.error?.mensaje ?? 'No fue posible eliminar la materia.'
+      error: (error) => {
+        this.mensaje = error.error?.mensaje ?? 'No fue posible eliminar la materia.';
+        this.cdr.detectChanges();
+      }
     });
 
   }
@@ -116,7 +127,10 @@ export class MateriasComponent implements OnInit {
         this.cancelarEdicion();
         this.cargarMaterias();
       },
-      error: (error) => this.mensaje = error.error?.mensaje ?? 'No fue posible guardar los cambios.'
+      error: (error) => {
+        this.mensaje = error.error?.mensaje ?? 'No fue posible guardar los cambios.';
+        this.cdr.detectChanges();
+      }
     });
 
   }
