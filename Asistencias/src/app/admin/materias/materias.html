@@ -1,0 +1,69 @@
+<div class="materias-container">
+  <h1>Materias</h1>
+
+  <div class="formulario">
+    <h2>Crear materia</h2>
+
+    <input
+      type="text"
+      placeholder="Nombre de la materia"
+      [(ngModel)]="nombre"
+    />
+
+    <textarea
+      placeholder="Descripción"
+      [(ngModel)]="descripcion"
+    ></textarea>
+
+    <input
+      type="number"
+      placeholder="Créditos"
+      [(ngModel)]="creditos"
+    />
+
+    <div class="acciones-formulario">
+      @if (!editando) {
+        <button (click)="crearMateria()">
+          Crear materia
+        </button>
+      } @else {
+        <button (click)="guardarCambios()">
+          Guardar cambios
+        </button>
+
+        <button (click)="cancelarEdicion()">
+          Cancelar
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="lista">
+    <h2>Lista de materias</h2>
+
+    <div
+      class="materia"
+      *ngFor="let materia of materias"
+    >
+      <div>
+        <h3>{{ materia.nombre }}</h3>
+
+        <p>{{ materia.descripcion }}</p>
+
+        <span>
+          Créditos: {{ materia.creditos }}
+        </span>
+      </div>
+
+      <div class="acciones">
+        <button (click)="editarMateria(materia)">
+          Editar
+        </button>
+
+        <button (click)="eliminarMateria(materia.id)">
+          Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

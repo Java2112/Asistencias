@@ -1,0 +1,247 @@
+<div class="dashboard-container">
+
+  <div class="dashboard-header">
+
+    <div>
+      <h1>Dashboard</h1>
+
+      <p>
+        Resumen general del sistema de asistencias.
+      </p>
+    </div>
+
+  </div>
+
+  <div class="estadisticas">
+
+    <div class="tarjeta-estadistica">
+
+      <div class="icono">
+        👨‍🎓
+      </div>
+
+      <div>
+        <span class="titulo-estadistica">
+          Estudiantes
+        </span>
+
+        <strong>
+          {{ totalEstudiantes }}
+        </strong>
+      </div>
+
+    </div>
+
+    <div class="tarjeta-estadistica">
+
+      <div class="icono">
+        👨‍🏫
+      </div>
+
+      <div>
+        <span class="titulo-estadistica">
+          Profesores
+        </span>
+
+        <strong>
+          {{ totalProfesores }}
+        </strong>
+      </div>
+
+    </div>
+
+    <div class="tarjeta-estadistica">
+
+      <div class="icono">
+        📚
+      </div>
+
+      <div>
+        <span class="titulo-estadistica">
+          Materias
+        </span>
+
+        <strong>
+          {{ totalMaterias }}
+        </strong>
+      </div>
+
+    </div>
+
+    <div class="tarjeta-estadistica">
+
+      <div class="icono">
+        📅
+      </div>
+
+      <div>
+        <span class="titulo-estadistica">
+          Horarios
+        </span>
+
+        <strong>
+          {{ totalHorarios }}
+        </strong>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="dashboard-grid">
+
+    <section class="panel">
+
+      <div class="panel-header">
+
+        <div>
+          <h2>Próximos horarios</h2>
+
+          <p>
+            Horarios registrados en el calendario.
+          </p>
+        </div>
+
+      </div>
+
+
+      @if (proximosHorarios.length === 0) {
+
+        <div class="sin-datos">
+
+          <p>
+            No hay horarios registrados.
+          </p>
+
+        </div>
+
+      } @else {
+
+        <div class="horarios-lista">
+
+          @for (
+            horario of proximosHorarios;
+            track horario.id
+          ) {
+
+            <div class="horario-item">
+
+              <div class="fecha-horario">
+
+                <strong>
+                  {{ horario.fecha }}
+                </strong>
+
+                <span>
+                  {{ horario.horaInicio }}
+                  -
+                  {{ horario.horaFin }}
+                </span>
+
+              </div>
+
+
+              <div class="informacion-horario">
+
+                <strong>
+                  {{ horario.materia.nombre }}
+                </strong>
+
+                <span>
+                  Profesor:
+                  {{ horario.profesor.nombre }}
+                </span>
+
+                <span>
+                  {{ horario.aula }}
+                </span>
+
+              </div>
+
+            </div>
+
+          }
+
+        </div>
+
+      }
+
+    </section>
+
+    <section class="panel">
+
+      <div class="panel-header">
+
+        <div>
+
+          <h2>Resumen</h2>
+
+          <p>
+            Información general.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="resumen-lista">
+
+        <div class="resumen-item">
+
+          <span>
+            Estudiantes registrados
+          </span>
+
+          <strong>
+            {{ totalEstudiantes }}
+          </strong>
+
+        </div>
+
+
+        <div class="resumen-item">
+
+          <span>
+            Profesores registrados
+          </span>
+
+          <strong>
+            {{ totalProfesores }}
+          </strong>
+
+        </div>
+
+
+        <div class="resumen-item">
+
+          <span>
+            Materias disponibles
+          </span>
+
+          <strong>
+            {{ totalMaterias }}
+          </strong>
+
+        </div>
+
+
+        <div class="resumen-item">
+
+          <span>
+            Horarios registrados
+          </span>
+
+          <strong>
+            {{ totalHorarios }}
+          </strong>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </div>
+
+</div>
