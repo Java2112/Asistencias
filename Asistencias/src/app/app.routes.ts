@@ -8,6 +8,7 @@ import { Usuarios } from './admin/usuarios/usuarios';
 import { MateriasComponent } from './admin/materias/materias';
 import { VistaPrincipalComponent } from './docentes/vista-principal/vista-principal.component';
 import { Estudiantes } from './estudiantes/estudiantes';
+import { sesionGuard } from './guards/sesion.guard';
 
 /**
  * Mapa de rutas unificado.
@@ -16,8 +17,8 @@ import { Estudiantes } from './estudiantes/estudiantes';
  * ruta raíz. El comodín '**' va siempre de último: colocado antes que las
  * demás rutas captura cualquier URL y deja los otros módulos inalcanzables.
  *
- * El login decide a cuál de las tres interfaces entra cada usuario según su
- * rol (ver RUTA_POR_ROL en login/login.ts).
+ * Cada área queda restringida a su rol, así que escribir la URL a mano no
+ * sirve para entrar a un módulo ajeno.
  */
 export const routes: Routes = [
   { path: 'login', component: Login },
@@ -25,6 +26,7 @@ export const routes: Routes = [
   {
     path: 'admin',
     component: AdminComponent,
+    canActivate: [sesionGuard('administrador')],
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: Dashboard },
@@ -34,9 +36,17 @@ export const routes: Routes = [
     ],
   },
 
-  { path: 'docentes', component: VistaPrincipalComponent },
+  {
+    path: 'docentes',
+    component: VistaPrincipalComponent,
+    canActivate: [sesionGuard('profesor')],
+  },
 
-  { path: 'estudiantes', component: Estudiantes },
+  {
+    path: 'estudiantes',
+    component: Estudiantes,
+    canActivate: [sesionGuard('estudiante')],
+  },
 
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: 'login' },

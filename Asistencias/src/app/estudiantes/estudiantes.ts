@@ -6,6 +6,7 @@ import { CalendarOptions, EventClickArg, EventInput } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 
 import { AsistenciaEstudianteService } from '../services/asistencia-estudiante.service';
+import { AuthService } from '../services/auth.service';
 import {
   VistaResumenEstudiante,
   VistaFaltaEstudiante,
@@ -25,6 +26,7 @@ import {
 })
 export class Estudiantes implements OnInit {
   private readonly asistenciaService = inject(AsistenciaEstudianteService);
+  private readonly auth = inject(AuthService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly cdr = inject(ChangeDetectorRef);
 
@@ -173,6 +175,15 @@ export class Estudiantes implements OnInit {
   };
 
   ngOnInit(): void {
+    // Los datos se consultan con el identificador de quien inició sesión, no
+    // con el primer estudiante que devuelva la base.
+    const sesion = this.auth.sesion();
+    if (sesion) {
+      this.idEstudianteActual.set(sesion.id_usuario);
+      this.nombreEstudiante.set(`${sesion.nombres} ${sesion.apellidos}`);
+      this.codigoEstudiante.set(sesion.codigo);
+    }
+
     this.cargarDatosEstudiante();
   }
 

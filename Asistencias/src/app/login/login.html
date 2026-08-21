@@ -13,7 +13,7 @@
         <div class="input-wrap" [class.invalid]="submitted() && !password.valid"><span class="input-icon">#</span><input id="password" name="password" [type]="showPassword() ? 'text' : 'password'" [(ngModel)]="credentials.password" #password="ngModel" required minlength="6" autocomplete="current-password" placeholder="Ingresa tu contraseña"><button class="toggle-password" type="button" (click)="togglePassword()">{{ showPassword() ? 'Ocultar' : 'Mostrar' }}</button></div>
         @if (submitted() && !password.valid) { <p class="field-error">La contraseña debe tener al menos 6 caracteres.</p> }
         <label class="check-row"><input type="checkbox" name="remember" [(ngModel)]="credentials.remember"><span class="checkbox-ui">x</span>Recordarme en este dispositivo</label>
-        <button class="submit" type="submit">Iniciar sesión <span aria-hidden="true">--&gt;</span></button>
+        <button class="submit" type="submit" [disabled]="enviando()">{{ enviando() ? 'Verificando...' : 'Iniciar sesión' }} <span aria-hidden="true">--&gt;</span></button>
         @if (message()) { <p class="form-message" role="status">{{ message() }}</p> }
       </form>
       <section class="demo-accounts" aria-label="Cuentas de prueba"><h3>Accesos de prueba</h3><p>Selecciona una cuenta para cargar sus credenciales.</p>

@@ -1,25 +1,14 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
-export type Rol = 'Administrador' | 'Profesor' | 'Estudiante';
-
-export interface UsuarioDemo {
+interface CuentaSugerida {
   nombre: string;
   correo: string;
   contrasena: string;
-  rol: Rol;
+  rol: string;
 }
-
-/** Clave bajo la que se guarda la sesión en el navegador. */
-export const CLAVE_SESION = 'asistencias-sesion-demo';
-
-/** A qué interfaz entra cada rol después de iniciar sesión. */
-const RUTA_POR_ROL: Record<Rol, string> = {
-  Administrador: '/admin',
-  Profesor: '/docentes',
-  Estudiante: '/estudiantes',
-};
 
 @Component({
   selector: 'app-login',
@@ -28,15 +17,17 @@ const RUTA_POR_ROL: Record<Rol, string> = {
   templateUrl: './login.html',
 })
 export class Login {
+  private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
 
   protected readonly showPassword = signal(false);
   protected readonly submitted = signal(false);
+  protected readonly enviando = signal(false);
   protected readonly message = signal('');
 
-  // TODO (Fase B): reemplazar por autenticación contra la API en
-  // environment.apiUrl, validando sobre usuarios.contrasena_hash con pgcrypto.
-  protected readonly usuariosDemo: UsuarioDemo[] = [
+  // Atajo para las demostraciones. Solo rellena el formulario: las
+  // credenciales se validan siempre contra la base de datos.
+  protected readonly usuariosDemo: CuentaSugerida[] = [
     { nombre: 'Ana Administradora', correo: 'admin@asistencias.edu', contrasena: 'Admin123*', rol: 'Administrador' },
     { nombre: 'Pedro Profesor', correo: 'profesor@asistencias.edu', contrasena: 'Profe123*', rol: 'Profesor' },
     { nombre: 'Sofía Estudiante', correo: 'estudiante@asistencias.edu', contrasena: 'Estudiante123*', rol: 'Estudiante' },
@@ -45,10 +36,9 @@ export class Login {
   protected credentials = { email: '', password: '', remember: true };
 
   constructor() {
-    // Si ya había una sesión guardada, entra directo a su interfaz.
-    const sesion = this.cargarSesion();
-    if (sesion) {
-      void this.router.navigateByUrl(RUTA_POR_ROL[sesion.rol]);
+    // Si ya hay una sesión abierta, no tiene sentido mostrar el formulario.
+    if (this.auth.autenticado()) {
+      void this.router.navigateByUrl(this.auth.rutaDeInicio());
     }
   }
 
@@ -58,43 +48,37 @@ export class Login {
 
   protected recuperarContrasena(event: Event): void {
     event.preventDefault();
-    this.message.set('Para esta demostración, usa una de las cuentas de prueba indicadas.');
+    this.message.set('Comunícate con el administrador para restablecer tu contraseña.');
   }
 
-  protected usarUsuario(usuario: UsuarioDemo): void {
-    this.credentials.email = usuario.correo;
-    this.credentials.password = usuario.contrasena;
-    this.message.set(`Credenciales de ${usuario.rol.toLowerCase()} cargadas.`);
+  protected usarUsuario(cuenta: CuentaSugerida): void {
+    this.credentials.email = cuenta.correo;
+    this.credentials.password = cuenta.contrasena;
+    this.message.set(`Credenciales de ${cuenta.rol.toLowerCase()} cargadas.`);
   }
 
   protected submit(): void {
     this.submitted.set(true);
 
-    const usuario = this.usuariosDemo.find(
-      (item) =>
-        item.correo === this.credentials.email.trim().toLowerCase() &&
-        item.contrasena === this.credentials.password,
-    );
+    const correo = this.credentials.email.trim();
+    if (!correo || !this.credentials.password) return;
 
-    if (!usuario) {
-      this.message.set('Correo o contraseña incorrectos. Usa una de las cuentas de prueba.');
-      return;
-    }
-
-    if (this.credentials.remember && typeof localStorage !== 'undefined') {
-      localStorage.setItem(CLAVE_SESION, JSON.stringify(usuario));
-    }
-
+    this.enviando.set(true);
     this.message.set('');
-    void this.router.navigateByUrl(RUTA_POR_ROL[usuario.rol]);
-  }
 
-  private cargarSesion(): UsuarioDemo | null {
-    if (typeof localStorage === 'undefined') return null;
-    try {
-      return JSON.parse(localStorage.getItem(CLAVE_SESION) ?? 'null');
-    } catch {
-      return null;
-    }
+    this.auth.login(correo, this.credentials.password).subscribe({
+      next: () => {
+        this.enviando.set(false);
+        void this.router.navigateByUrl(this.auth.rutaDeInicio());
+      },
+      error: (error) => {
+        this.enviando.set(false);
+        this.message.set(
+          error.status === 0
+            ? 'No hay conexión con el servidor. Verifica que la API esté corriendo en el puerto 3000.'
+            : (error.error?.mensaje ?? 'No fue posible iniciar sesión.'),
+        );
+      },
+    });
   }
 }
