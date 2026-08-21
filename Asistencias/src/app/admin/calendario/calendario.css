@@ -1,0 +1,403 @@
+.calendario-container {
+  max-width: 1200px;
+
+  margin: auto;
+
+  padding: 20px;
+}
+
+.calendario-container h1 {
+  color: #182987;
+
+  margin-bottom: 8px;
+}
+
+
+.descripcion {
+  margin-bottom: 25px;
+
+  color: #555;
+}
+
+.calendar-container {
+  background: #FFFFFF;
+
+  padding: 25px;
+
+  border-radius: 12px;
+
+  margin-bottom: 30px;
+
+  border: 1px solid #EAF0FF;
+
+  box-shadow:
+    0 3px 10px rgba(24, 41, 135, 0.08);
+}
+
+:host ::ng-deep .fc .fc-button {
+  background-color: #182987;
+
+  border-color: #182987;
+
+  color: #FFFFFF;
+
+  box-shadow: none;
+}
+
+
+:host ::ng-deep .fc .fc-button:hover {
+  background-color: #111E68;
+
+  border-color: #111E68;
+}
+
+
+:host ::ng-deep .fc .fc-button:disabled {
+  background-color: #EAF0FF;
+
+  border-color: #EAF0FF;
+
+  color: #182987;
+}
+
+
+:host ::ng-deep .fc .fc-today-button {
+  background-color: #ED1736;
+
+  border-color: #ED1736;
+}
+
+
+:host ::ng-deep .fc .fc-today-button:hover {
+  background-color: #C9102B;
+
+  border-color: #C9102B;
+}
+
+
+:host ::ng-deep .fc .fc-daygrid-day.fc-day-today {
+  background-color: #FFF0F2;
+}
+
+
+:host ::ng-deep .fc .fc-col-header-cell {
+  background-color: #EAF0FF;
+}
+
+
+:host ::ng-deep .fc .fc-col-header-cell-cushion {
+  color: #182987;
+
+  font-weight: 600;
+}
+
+
+:host ::ng-deep .fc .fc-daygrid-day-number {
+  color: #182987;
+}
+
+
+:host ::ng-deep .fc .fc-event {
+  background-color: #182987;
+
+  border-color: #182987;
+
+  color: #FFFFFF;
+
+  border-radius: 5px;
+
+  padding: 2px 4px;
+}
+
+.formulario {
+  background: #FFFFFF;
+
+  padding: 25px;
+
+  border-radius: 12px;
+
+  margin-bottom: 30px;
+
+  border: 1px solid #EAF0FF;
+
+  box-shadow:
+    0 3px 10px rgba(24, 41, 135, 0.08);
+}
+
+
+.formulario h2 {
+  margin-top: 0;
+
+  color: #182987;
+
+  margin-bottom: 20px;
+}
+
+
+.formulario label,
+.filtro label {
+  display: block;
+
+  margin-bottom: 6px;
+
+  font-weight: 600;
+
+  color: #182987;
+}
+
+
+.formulario input,
+.formulario select,
+.filtro select {
+  display: block;
+
+  width: 100%;
+
+  box-sizing: border-box;
+
+  margin-bottom: 15px;
+
+  padding: 12px;
+
+  border: 1px solid #D5DDF5;
+
+  border-radius: 7px;
+
+  background-color: #F8FAFF;
+
+  color: #333;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.formulario input:focus,
+.formulario select:focus,
+.filtro select:focus {
+  border-color: #182987;
+
+  box-shadow:
+    0 0 0 3px #EAF0FF;
+
+  background-color: #FFFFFF;
+}
+
+
+.formulario select:disabled {
+  background: #EAF0FF;
+
+  color: #777;
+
+  cursor: not-allowed;
+}
+
+.mensaje-error {
+  color: #ED1736;
+
+  background-color: #FFF0F2;
+
+  border-left: 4px solid #ED1736;
+
+  padding: 10px 12px;
+
+  border-radius: 5px;
+
+  font-size: 14px;
+
+  margin-top: -5px;
+}
+
+.acciones-formulario {
+  display: flex;
+
+  gap: 10px;
+
+  margin-top: 20px;
+}
+
+
+button {
+  border: none;
+
+  padding: 10px 18px;
+
+  border-radius: 7px;
+
+  cursor: pointer;
+
+  background-color: #182987;
+
+  color: #FFFFFF;
+
+  font-weight: 600;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+
+button:hover {
+  background-color: #111E68;
+
+  transform: translateY(-1px);
+}
+
+.acciones-formulario button:last-child {
+  background-color: #FFF0F2;
+
+  color: #ED1736;
+}
+
+
+.acciones-formulario button:last-child:hover {
+  background-color: #ED1736;
+
+  color: #FFFFFF;
+}
+
+.filtro {
+  background: #FFFFFF;
+
+  padding: 25px;
+
+  border-radius: 12px;
+
+  margin-bottom: 30px;
+
+  border: 1px solid #EAF0FF;
+
+  box-shadow:
+    0 3px 10px rgba(24, 41, 135, 0.08);
+}
+
+.lista {
+  background: #FFFFFF;
+
+  padding: 25px;
+
+  border-radius: 12px;
+
+  border: 1px solid #EAF0FF;
+
+  box-shadow:
+    0 3px 10px rgba(24, 41, 135, 0.08);
+}
+
+
+.lista h2 {
+  margin-top: 0;
+
+  color: #182987;
+
+  margin-bottom: 20px;
+}
+
+.horario {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  gap: 20px;
+
+  padding: 20px 0;
+
+  border-bottom: 1px solid #EAF0FF;
+}
+
+
+.horario:last-child {
+  border-bottom: none;
+}
+
+
+.horario h3 {
+  margin: 0 0 8px;
+
+  color: #182987;
+}
+
+
+.horario p {
+  margin: 5px 0;
+
+  color: #555;
+}
+
+.horario p strong {
+  color: #182987;
+}
+
+.acciones {
+  display: flex;
+
+  gap: 10px;
+}
+
+
+.acciones button {
+  background-color: #182987;
+}
+
+
+.acciones button:last-child {
+  background-color: #FFF0F2;
+
+  color: #ED1736;
+}
+
+
+.acciones button:last-child:hover {
+  background-color: #ED1736;
+
+  color: #FFFFFF;
+}
+
+@media (max-width: 700px) {
+
+  .calendario-container {
+    padding: 15px;
+  }
+
+
+  .calendar-container,
+  .formulario,
+  .filtro,
+  .lista {
+    padding: 20px;
+  }
+
+
+  .horario {
+    flex-direction: column;
+
+    align-items: flex-start;
+  }
+
+
+  .acciones {
+    width: 100%;
+  }
+
+
+  .acciones button {
+    flex: 1;
+  }
+
+
+  .acciones-formulario {
+    flex-direction: column;
+  }
+
+
+  .acciones-formulario button {
+    width: 100%;
+  }
+
+}

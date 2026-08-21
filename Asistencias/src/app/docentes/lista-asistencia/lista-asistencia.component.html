@@ -1,0 +1,46 @@
+<div class="contenedor-lista">
+  <div class="encabezado">
+    <h1>Lista de Asistencia</h1>
+    <p class="id-clase">Clase: {{ idClase() }}</p>
+  </div>
+
+  <div class="lista-estudiantes">
+    @for (estudiante of estudiantes(); track estudiante.identificador) {
+      <div class="fila-estudiante">
+        <div class="info-estudiante">
+          <div class="nombre">{{ estudiante.nombreCompleto }}</div>
+          <div class="codigo">{{ estudiante.identificador }}</div>
+        </div>
+
+        <div class="botones-asistencia">
+          <button
+            class="btn btn-presente"
+            [class.activo]="estudiante.asistio === true"
+            (click)="marcarPresente(estudiante.identificador)"
+            aria-label="Marcar como presente"
+          >
+            ✅ Presente
+          </button>
+          <button
+            class="btn btn-ausente"
+            [class.activo]="estudiante.asistio === false"
+            (click)="marcarAusente(estudiante.identificador)"
+            aria-label="Marcar como ausente"
+          >
+            ❌ Faltó
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="pie-lista">
+    <button
+      class="btn-guardar"
+      (click)="guardarAsistencia()"
+      aria-label="Guardar asistencia"
+    >
+      Guardar Asistencia
+    </button>
+  </div>
+</div>
