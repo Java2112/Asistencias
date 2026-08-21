@@ -9,7 +9,7 @@ export class App {
   protected togglePassword(): void { this.showPassword.update(value => !value); }
   protected submit(): void {
     this.submitted.set(true);
-    this.message.set(this.credentials.email && this.credentials.password.length >= 6 ? 'Access received. Connect your authentication service here.' : 'Check the highlighted fields to continue.');
+    this.message.set(this.credentials.email && this.credentials.password.length >= 6 ? 'Acceso recibido. Conecta aquí tu servicio de autenticación.' : 'Revisa los campos marcados para continuar.');
   }
-  protected forgotPassword(event: Event): void { event.preventDefault(); this.message.set('We will help you recover your access through support.'); }
+  protected forgotPassword(event: Event): void { event.preventDefault(); this.message.set('Te ayudaremos a recuperar el acceso desde soporte.'); }
 }

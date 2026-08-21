@@ -1,21 +1,20 @@
 <main class="login-shell">
-<section class="brand-panel" aria-label="Platform information">
-<a class="brand" href="#" aria-label="Asistencias home"><span class="brand-mark">OK</span>asistencias<span class="dot">.</span></a>
-<div class="brand-copy"><span class="eyebrow">SMART MANAGEMENT</span><h1>Your time matters.<br>Make it visible.</h1><p>Centralize your team's attendance in one simple and secure place.</p></div>
-<div class="team-proof"><div class="avatars" aria-hidden="true"><span>AM</span><span>JL</span><span>SC</span><span>+</span></div><p><strong>More than 1,200 teams</strong> already organize their workday with us.</p></div>
+<section class="brand-panel" aria-label="Información de la plataforma">
+<div class="brand-copy"><span class="eyebrow">APRENDER Y CRECER</span><h1>Tu asistencia<br>abre caminos.</h1><p>Organiza tu jornada académica en un solo lugar, de forma simple, clara y segura.</p></div>
+<div class="team-proof"><div class="avatars" aria-hidden="true"><span>AM</span><span>JL</span><span>SC</span><span>+</span></div><p><strong>Más de 1.200 estudiantes</strong> ya organizan su asistencia con nosotros.</p></div>
 </section>
 <section class="form-panel"><div class="form-container">
-<div class="welcome"><span class="mobile-brand">asistencias<span>.</span></span><h2>Welcome back</h2><p>Enter your details to continue.</p></div>
+<div class="welcome"><span class="mobile-brand">asistencias<span>.</span></span><h2>¡Bienvenido de nuevo!</h2><p>Ingresa tus datos para continuar.</p></div>
 <form (ngSubmit)="submit()" #loginForm="ngForm" novalidate>
-<label for="email">Email address</label>
-<div class="input-wrap" [class.invalid]="submitted() && !email.valid"><span class="input-icon">@</span><input id="email" name="email" type="email" [(ngModel)]="credentials.email" #email="ngModel" required email autocomplete="email" placeholder="name@company.com"></div>
-@if (submitted() && !email.valid) { <p class="field-error">Enter a valid email address.</p> }
-<div class="label-row"><label for="password">Password</label><a href="#" (click)="forgotPassword($event)">Forgot your password?</a></div>
-<div class="input-wrap" [class.invalid]="submitted() && !password.valid"><span class="input-icon">#</span><input id="password" name="password" [type]="showPassword() ? 'text' : 'password'" [(ngModel)]="credentials.password" #password="ngModel" required minlength="6" autocomplete="current-password" placeholder="Enter your password"><button class="toggle-password" type="button" (click)="togglePassword()">{{ showPassword() ? 'Hide' : 'Show' }}</button></div>
-@if (submitted() && !password.valid) { <p class="field-error">Password must have at least 6 characters.</p> }
-<label class="check-row"><input type="checkbox" name="remember" [(ngModel)]="credentials.remember"><span class="checkbox-ui">x</span>Remember me on this device</label>
-<button class="submit" type="submit">Sign in <span aria-hidden="true">--&gt;</span></button>
+<label for="email">Correo electrónico</label>
+<div class="input-wrap" [class.invalid]="submitted() && !email.valid"><span class="input-icon">@</span><input id="email" name="email" type="email" [(ngModel)]="credentials.email" #email="ngModel" required email autocomplete="email" placeholder="nombre@institucion.edu"></div>
+@if (submitted() && !email.valid) { <p class="field-error">Ingresa un correo electrónico válido.</p> }
+<div class="label-row"><label for="password">Contraseña</label><a href="#" (click)="forgotPassword($event)">¿Olvidaste tu contraseña?</a></div>
+<div class="input-wrap" [class.invalid]="submitted() && !password.valid"><span class="input-icon">#</span><input id="password" name="password" [type]="showPassword() ? 'text' : 'password'" [(ngModel)]="credentials.password" #password="ngModel" required minlength="6" autocomplete="current-password" placeholder="Ingresa tu contraseña"><button class="toggle-password" type="button" (click)="togglePassword()">{{ showPassword() ? 'Ocultar' : 'Mostrar' }}</button></div>
+@if (submitted() && !password.valid) { <p class="field-error">La contraseña debe tener al menos 6 caracteres.</p> }
+<label class="check-row"><input type="checkbox" name="remember" [(ngModel)]="credentials.remember"><span class="checkbox-ui">x</span>Recordarme en este dispositivo</label>
+<button class="submit" type="submit">Iniciar sesión <span aria-hidden="true">--&gt;</span></button>
 @if (message()) { <p class="form-message" role="status">{{ message() }}</p> }
-</form><p class="support">Need help? <a href="mailto:soporte@asistencias.com">Contact support</a></p>
-</div><p class="copyright">(c) 2026 Asistencias. All rights reserved.</p></section>
+</form><p class="support">¿Necesitas ayuda? <a href="mailto:soporte@asistencias.com">Contacta a soporte</a></p>
+</div><p class="copyright">© 2026 Asistencias. Todos los derechos reservados.</p></section>
 </main>
