@@ -23,23 +23,7 @@ export interface ClaseAsignada {
 })
 export class CalendarioDocenteComponent implements OnInit {
   // Señales para gestión reactiva del estado
-  clasesAsignadas = signal<ClaseAsignada[]>([
-    {
-      identificador: 'CLASE-001',
-      titulo: 'Matemáticas - Grupo A',
-      fechaInicio: '2026-08-25T08:00:00'
-    },
-    {
-      identificador: 'CLASE-002',
-      titulo: 'Física - Grupo B',
-      fechaInicio: '2026-08-27T10:30:00'
-    },
-    {
-      identificador: 'CLASE-003',
-      titulo: 'Química - Grupo C',
-      fechaInicio: '2026-09-01T14:00:00'
-    }
-  ]);
+  clasesAsignadas = signal<ClaseAsignada[]>([]);
 
   // Output para emitir el identificador de la clase seleccionada
   claseSeleccionada = output<string>();

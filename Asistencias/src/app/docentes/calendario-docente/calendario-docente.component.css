@@ -1,7 +1,7 @@
 /* Contenedor principal del componente */
 .contenedor-calendario {
   padding: 1rem;
-  background-color: #f9fafb;
+  background-color: #F8FAFF;
   min-height: 100vh;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
@@ -9,14 +9,14 @@
 /* Título de la sección */
 .titulo-seccion {
   margin-bottom: 2rem;
-  border-bottom: 2px solid #e5e7eb;
+  border-bottom: 2px solid #182987;
   padding-bottom: 1rem;
 }
 
 .titulo-seccion h1 {
   margin: 0;
   font-size: 1.875rem;
-  color: #1f2937;
+  color: #182987;
   font-weight: 700;
 }
 
@@ -36,8 +36,8 @@
 }
 
 :deep(.fc-button-primary) {
-  background-color: #3b82f6;
-  border-color: #3b82f6;
+  background-color: #182987;
+  border-color: #182987;
   text-transform: capitalize;
   font-weight: 600;
   font-size: 0.875rem;
@@ -45,8 +45,8 @@
 }
 
 :deep(.fc-button-primary:hover) {
-  background-color: #1e40af;
-  border-color: #1e40af;
+  background-color: #0d1a4f;
+  border-color: #0d1a4f;
 }
 
 :deep(.fc-button-primary.fc-button-active) {

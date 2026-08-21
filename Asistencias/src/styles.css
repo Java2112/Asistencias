@@ -1,1 +1,32 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Colores Institucionales */
+:root {
+  /* Colores principales */
+  --azul-institucional: #182987;
+  --rojo-institucional: #ED1736;
+  
+  /* Colores de apoyo */
+  --azul-claro: #EAF0FF;
+  --rojo-claro: #FFF0F2;
+  
+  /* Fondo */
+  --fondo-principal: #F8FAFF;
+  
+  /* Neutros */
+  --texto-oscuro: #1f2937;
+  --texto-gris: #6b7280;
+  --borde-gris: #e5e7eb;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--fondo-principal);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  color: var(--texto-oscuro);
+}

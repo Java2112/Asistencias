@@ -22,33 +22,7 @@ export class ListaAsistenciaComponent implements OnInit {
   idClase = input.required<string>();
 
   // Signal con la lista de estudiantes
-  estudiantes = signal<Estudiante[]>([
-    {
-      identificador: 'EST-001',
-      nombreCompleto: 'Juan Carlos Rodríguez',
-      asistio: null
-    },
-    {
-      identificador: 'EST-002',
-      nombreCompleto: 'María de los Ángeles García',
-      asistio: null
-    },
-    {
-      identificador: 'EST-003',
-      nombreCompleto: 'Pedro Antonio López',
-      asistio: null
-    },
-    {
-      identificador: 'EST-004',
-      nombreCompleto: 'Sofía Elena Martínez',
-      asistio: null
-    },
-    {
-      identificador: 'EST-005',
-      nombreCompleto: 'Carlos Felipe Díaz',
-      asistio: null
-    }
-  ]);
+  estudiantes = signal<Estudiante[]>([]);
 
   ngOnInit(): void {
     // Inicializar con el ID de la clase
