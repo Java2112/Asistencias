@@ -1,21 +1,8 @@
-/**
- * Types and Models for the Attendance Management System (Student Module)
- * Matching PostgreSQL schema and database views.
- */
 
-/**
- * PostgreSQL Enum: asistencia.estado_asistencia
- */
 export type EstadoAsistencia = 'pendiente' | 'presente' | 'tardanza' | 'ausente' | 'justificado';
 
-/**
- * PostgreSQL Enum: calendario.estado_evento
- */
 export type EstadoEvento = 'programado' | 'en_curso' | 'finalizado' | 'cancelado';
 
-/**
- * PostgreSQL View: asistencia.vista_resumen_estudiante
- */
 export interface VistaResumenEstudiante {
   id_usuario: number;
   codigo: string;
@@ -27,9 +14,6 @@ export interface VistaResumenEstudiante {
   porcentaje_asistencia: number;
 }
 
-/**
- * PostgreSQL View: asistencia.vista_faltas_estudiante
- */
 export interface VistaFaltaEstudiante {
   id_estudiante: number;
   codigo_estudiante: string;
@@ -44,9 +28,6 @@ export interface VistaFaltaEstudiante {
   tipo_falta: string;
 }
 
-/**
- * PostgreSQL View: calendario.vista_horario
- */
 export interface VistaHorario {
   id_evento: number;
   fecha: string;
@@ -64,14 +45,9 @@ export interface VistaHorario {
   profesor: string;
   aula: string;
   ubicacion: string;
-  // Optional attendance state if joined in backend or retrieved per student
   estado_asistencia?: EstadoAsistencia;
 }
 
-/**
- * DTO for checking into class / marking attendance
- * Stored procedure / function: asistencia.marcar(id_evento, id_estudiante, estado, marcado_por, observacion)
- */
 export interface MarcarAsistenciaDto {
   id_evento: number;
   id_estudiante: number;
@@ -80,9 +56,6 @@ export interface MarcarAsistenciaDto {
   observacion?: string | null;
 }
 
-/**
- * Response for asistencia.marcar and calendario.entrar_a_clase
- */
 export interface OperacionAsistenciaResponse {
   success: boolean;
   mensaje: string;
@@ -92,9 +65,6 @@ export interface OperacionAsistenciaResponse {
   estado?: EstadoAsistencia;
 }
 
-/**
- * Filter parameters for search and calendar/table filtering
- */
 export interface FiltrosEstudiante {
   materia?: string;
   nombre_grupo?: string;
@@ -104,9 +74,6 @@ export interface FiltrosEstudiante {
   fecha_fin?: string;
 }
 
-/**
- * Palette colors for attendance statuses (as required by specs)
- */
 export const COLORES_ESTADO: Record<EstadoAsistencia | 'programado' | 'en_curso' | 'finalizado' | 'cancelado', string> = {
   presente: '#15803d',
   tardanza: '#b45309',
