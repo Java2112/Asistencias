@@ -11,6 +11,18 @@
 BEGIN;
 
 -- ---------------------------------------------------------------------------
+-- Ajuste de estructura
+--
+-- La pantalla de materias del administrador pide los créditos y los valida,
+-- pero academico.materias no tenía dónde guardarlos, así que el dato se perdía
+-- al grabar.
+-- ---------------------------------------------------------------------------
+
+ALTER TABLE academico.materias
+  ADD COLUMN IF NOT EXISTS creditos smallint NOT NULL DEFAULT 3
+    CONSTRAINT ck_materias_creditos CHECK (creditos > 0);
+
+-- ---------------------------------------------------------------------------
 -- Roles
 --
 -- Las claves 'profesor' y 'estudiante' no son arbitrarias: los triggers

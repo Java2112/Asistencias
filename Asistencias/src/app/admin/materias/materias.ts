@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+
+import { AdminService } from '../../services/admin.service';
 import { Materia } from '../../models/materia';
 
 @Component({
@@ -10,43 +12,75 @@ import { Materia } from '../../models/materia';
   templateUrl: './materias.html',
   styleUrl: './materias.css'
 })
-export class MateriasComponent {
+export class MateriasComponent implements OnInit {
+
+  private readonly adminService = inject(AdminService);
 
   materias: Materia[] = [];
 
+  codigo: string = '';
   nombre: string = '';
   descripcion: string = '';
   creditos: number = 0;
   editando: boolean = false;
   materiaEditandoId: number | null = null;
+  mensaje: string = '';
+
+  ngOnInit(): void {
+    this.cargarMaterias();
+  }
+
+  private cargarMaterias(): void {
+    this.adminService.getMaterias().subscribe({
+      next: (materias) => {
+        this.materias = materias.map(
+          materia => new Materia(
+            materia.id_materia,
+            materia.nombre,
+            materia.descripcion ?? '',
+            materia.creditos
+          )
+        );
+        this.codigosPorId = new Map(
+          materias.map(materia => [materia.id_materia, materia.codigo_materia])
+        );
+      },
+      error: () => this.mensaje = 'No fue posible cargar las materias.'
+    });
+  }
+
+  // El código de la materia no está en el modelo Materia, pero la base lo
+  // exige y es único, así que se conserva aparte para poder editarlo.
+  private codigosPorId = new Map<number, string>();
 
   crearMateria(): void {
 
-    if (!this.nombre || !this.descripcion || this.creditos <= 0) {
+    if (!this.codigo || !this.nombre || !this.descripcion || this.creditos <= 0) {
+      this.mensaje = 'Completa código, nombre, descripción y créditos.';
       return;
     }
 
-    const nuevoId = this.materias.length > 0
-      ? Math.max(...this.materias.map(materia => materia.id)) + 1
-      : 1;
+    this.adminService.crearMateria({
+      codigo_materia: this.codigo,
+      nombre: this.nombre,
+      descripcion: this.descripcion,
+      creditos: this.creditos
+    }).subscribe({
+      next: () => {
+        this.limpiarFormulario();
+        this.cargarMaterias();
+      },
+      error: (error) => this.mensaje = error.error?.mensaje ?? 'No fue posible crear la materia.'
+    });
 
-    const nuevaMateria = new Materia(
-      nuevoId,
-      this.nombre,
-      this.descripcion,
-      this.creditos
-    );
-
-    this.materias.push(nuevaMateria);
-
-    this.limpiarFormulario();
   }
 
   eliminarMateria(id: number): void {
 
-    this.materias = this.materias.filter(
-      materia => materia.id !== id
-    );
+    this.adminService.desactivarMateria(id).subscribe({
+      next: () => this.cargarMaterias(),
+      error: (error) => this.mensaje = error.error?.mensaje ?? 'No fue posible eliminar la materia.'
+    });
 
   }
 
@@ -55,6 +89,7 @@ export class MateriasComponent {
     this.editando = true;
     this.materiaEditandoId = materia.id;
 
+    this.codigo = this.codigosPorId.get(materia.id) ?? '';
     this.nombre = materia.nombre;
     this.descripcion = materia.descripcion;
     this.creditos = materia.creditos;
@@ -71,19 +106,19 @@ export class MateriasComponent {
       return;
     }
 
-    const materia = this.materias.find(
-      materia => materia.id === this.materiaEditandoId
-    );
+    this.adminService.actualizarMateria(this.materiaEditandoId, {
+      codigo_materia: this.codigo,
+      nombre: this.nombre,
+      descripcion: this.descripcion,
+      creditos: this.creditos
+    }).subscribe({
+      next: () => {
+        this.cancelarEdicion();
+        this.cargarMaterias();
+      },
+      error: (error) => this.mensaje = error.error?.mensaje ?? 'No fue posible guardar los cambios.'
+    });
 
-    if (!materia) {
-      return;
-    }
-
-    materia.nombre = this.nombre;
-    materia.descripcion = this.descripcion;
-    materia.creditos = this.creditos;
-
-    this.cancelarEdicion();
   }
 
   cancelarEdicion(): void {
@@ -95,9 +130,11 @@ export class MateriasComponent {
   }
 
   private limpiarFormulario(): void {
+    this.codigo = '';
     this.nombre = '';
     this.descripcion = '';
     this.creditos = 0;
+    this.mensaje = '';
   }
 
 }

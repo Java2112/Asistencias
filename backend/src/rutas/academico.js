@@ -9,7 +9,7 @@ router.get(
   '/materias',
   asincrono(async (_req, res) => {
     const { rows } = await consultar(
-      `SELECT id_materia, codigo_materia, nombre, descripcion, activa
+      `SELECT id_materia, codigo_materia, nombre, descripcion, creditos, activa
          FROM academico.materias ORDER BY nombre`,
     );
     res.json(rows);
@@ -19,16 +19,16 @@ router.get(
 router.post(
   '/materias',
   asincrono(async (req, res) => {
-    const { codigo_materia, nombre, descripcion } = req.body ?? {};
+    const { codigo_materia, nombre, descripcion, creditos } = req.body ?? {};
 
     if (!codigo_materia || !nombre) {
       return res.status(400).json({ mensaje: 'codigo_materia y nombre son obligatorios.' });
     }
 
     const { rows } = await consultar(
-      `INSERT INTO academico.materias (codigo_materia, nombre, descripcion)
-       VALUES ($1, $2, $3) RETURNING *`,
-      [codigo_materia, nombre, descripcion ?? null],
+      `INSERT INTO academico.materias (codigo_materia, nombre, descripcion, creditos)
+       VALUES ($1, $2, $3, COALESCE($4, 3)) RETURNING *`,
+      [codigo_materia, nombre, descripcion ?? null, creditos ?? null],
     );
 
     res.status(201).json(rows[0]);
@@ -38,19 +38,45 @@ router.post(
 router.put(
   '/materias/:id',
   asincrono(async (req, res) => {
-    const { nombre, descripcion, activa } = req.body ?? {};
+    const { codigo_materia, nombre, descripcion, creditos, activa } = req.body ?? {};
 
     const { rows } = await consultar(
       `UPDATE academico.materias
-          SET nombre      = COALESCE($2, nombre),
-              descripcion = COALESCE($3, descripcion),
-              activa      = COALESCE($4, activa)
+          SET codigo_materia = COALESCE($2, codigo_materia),
+              nombre         = COALESCE($3, nombre),
+              descripcion    = COALESCE($4, descripcion),
+              creditos       = COALESCE($5, creditos),
+              activa         = COALESCE($6, activa)
         WHERE id_materia = $1::int RETURNING *`,
-      [req.params.id, nombre ?? null, descripcion ?? null, activa ?? null],
+      [
+        req.params.id,
+        codigo_materia ?? null,
+        nombre ?? null,
+        descripcion ?? null,
+        creditos ?? null,
+        activa ?? null,
+      ],
     );
 
     if (!rows[0]) return res.status(404).json({ mensaje: 'Materia no encontrada.' });
     res.json(rows[0]);
+  }),
+);
+
+/**
+ * Baja lógica: los grupos referencian la materia, así que un borrado real
+ * fallaría por la restricción de llave foránea.
+ */
+router.delete(
+  '/materias/:id',
+  asincrono(async (req, res) => {
+    const { rows } = await consultar(
+      `UPDATE academico.materias SET activa = false WHERE id_materia = $1::int RETURNING id_materia`,
+      [req.params.id],
+    );
+
+    if (!rows[0]) return res.status(404).json({ mensaje: 'Materia no encontrada.' });
+    res.json({ success: true, mensaje: 'Materia desactivada.' });
   }),
 );
 
@@ -97,6 +123,42 @@ router.post(
     );
 
     res.status(201).json(rows[0]);
+  }),
+);
+
+/** Inscripciones de un estudiante, con la materia y el grupo resueltos. */
+router.get(
+  '/inscripciones',
+  asincrono(async (req, res) => {
+    const { id_estudiante } = req.query;
+
+    const { rows } = await consultar(
+      `SELECT i.id_inscripcion,
+              i.id_grupo,
+              i.id_estudiante,
+              i.activa,
+              g.nombre_grupo,
+              g.id_materia,
+              m.nombre AS materia
+         FROM academico.inscripciones i
+         JOIN academico.grupos   g ON g.id_grupo   = i.id_grupo
+         JOIN academico.materias m ON m.id_materia = g.id_materia
+        WHERE ($1::int IS NULL OR i.id_estudiante = $1::int)
+        ORDER BY m.nombre`,
+      [id_estudiante ?? null],
+    );
+
+    res.json(rows);
+  }),
+);
+
+router.delete(
+  '/inscripciones/:id',
+  asincrono(async (req, res) => {
+    await consultar(`DELETE FROM academico.inscripciones WHERE id_inscripcion = $1::int`, [
+      req.params.id,
+    ]);
+    res.json({ success: true, mensaje: 'Inscripción eliminada.' });
   }),
 );
 

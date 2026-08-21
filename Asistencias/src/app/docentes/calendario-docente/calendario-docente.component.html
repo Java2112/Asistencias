@@ -4,9 +4,13 @@
   </div>
 
   <div class="calendario-wrapper">
-    <full-calendar
-      [options]="opcionesCalendario()"
-    ></full-calendar>
+    <!-- FullCalendar necesita el DOM, que no existe al renderizar en el
+         servidor. Se dibuja solo en el navegador. -->
+    @if (isBrowser) {
+      <full-calendar
+        [options]="opcionesCalendario()"
+      ></full-calendar>
+    }
   </div>
 
   <div class="clases-listado">

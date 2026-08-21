@@ -32,6 +32,18 @@
 
     </select>
 
+    <label for="codigo">
+      Código
+    </label>
+
+    <input
+      id="codigo"
+      type="text"
+      placeholder="Ej. EST002"
+      [(ngModel)]="codigo"
+      [disabled]="editando"
+    />
+
     <label for="nombre">
       Nombre completo
     </label>
@@ -53,6 +65,25 @@
       placeholder="Correo electrónico"
       [(ngModel)]="correo"
     />
+
+    @if (!editando) {
+
+      <label for="contrasena">
+        Contraseña
+      </label>
+
+      <input
+        id="contrasena"
+        type="password"
+        placeholder="Contraseña de acceso"
+        [(ngModel)]="contrasena"
+      />
+
+    }
+
+    @if (mensaje) {
+      <p class="ayuda" role="status">{{ mensaje }}</p>
+    }
 
     @if (tipoUsuario === 'profesor') {
 

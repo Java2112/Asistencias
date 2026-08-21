@@ -6,6 +6,12 @@
 
     <input
       type="text"
+      placeholder="Código (ej. BD101)"
+      [(ngModel)]="codigo"
+    />
+
+    <input
+      type="text"
       placeholder="Nombre de la materia"
       [(ngModel)]="nombre"
     />
@@ -20,6 +26,10 @@
       placeholder="Créditos"
       [(ngModel)]="creditos"
     />
+
+    @if (mensaje) {
+      <p class="mensaje-formulario" role="status">{{ mensaje }}</p>
+    }
 
     <div class="acciones-formulario">
       @if (!editando) {

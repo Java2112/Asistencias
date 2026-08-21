@@ -52,9 +52,13 @@
 
   <div class="calendar-container">
 
-    <full-calendar
-      [options]="calendarOptions">
-    </full-calendar>
+    <!-- FullCalendar necesita el DOM, que no existe al renderizar en el
+         servidor. Se dibuja solo en el navegador. -->
+    @if (isBrowser) {
+      <full-calendar
+        [options]="calendarOptions">
+      </full-calendar>
+    }
 
   </div>
 

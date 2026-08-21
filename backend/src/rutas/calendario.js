@@ -114,6 +114,42 @@ router.post(
   }),
 );
 
+router.put(
+  '/eventos/:id',
+  asincrono(async (req, res) => {
+    const { id_grupo, id_profesor, id_aula, titulo, descripcion, fecha, hora_inicio, hora_fin } =
+      req.body ?? {};
+
+    const { rows } = await consultar(
+      `UPDATE calendario.eventos
+          SET id_grupo    = COALESCE($2, id_grupo),
+              id_profesor = COALESCE($3, id_profesor),
+              id_aula     = COALESCE($4, id_aula),
+              titulo      = COALESCE($5, titulo),
+              descripcion = COALESCE($6, descripcion),
+              fecha       = COALESCE($7, fecha),
+              hora_inicio = COALESCE($8, hora_inicio),
+              hora_fin    = COALESCE($9, hora_fin)
+        WHERE id_evento = $1::int
+        RETURNING *`,
+      [
+        req.params.id,
+        id_grupo ?? null,
+        id_profesor ?? null,
+        id_aula ?? null,
+        titulo ?? null,
+        descripcion ?? null,
+        fecha ?? null,
+        hora_inicio ?? null,
+        hora_fin ?? null,
+      ],
+    );
+
+    if (!rows[0]) return res.status(404).json({ mensaje: 'Evento no encontrado.' });
+    res.json(rows[0]);
+  }),
+);
+
 router.delete(
   '/eventos/:id',
   asincrono(async (req, res) => {

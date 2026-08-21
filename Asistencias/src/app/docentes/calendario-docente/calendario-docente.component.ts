@@ -1,9 +1,12 @@
-import { Component, signal, output, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, signal, output, inject, PLATFORM_ID, OnInit } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { CalendarOptions, EventClickArg } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
+
+import { DocenteService } from '../../services/docente.service';
+import { AuthService } from '../../services/auth.service';
 
 /**
  * Interfaz para las clases asignadas al docente
@@ -22,8 +25,15 @@ export interface ClaseAsignada {
   styleUrls: ['./calendario-docente.component.css']
 })
 export class CalendarioDocenteComponent implements OnInit {
+  private readonly docenteService = inject(DocenteService);
+  private readonly auth = inject(AuthService);
+
+  readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+
   // Señales para gestión reactiva del estado
   clasesAsignadas = signal<ClaseAsignada[]>([]);
+  cargando = signal(false);
+  mensaje = signal('');
 
   // Output para emitir el identificador de la clase seleccionada
   claseSeleccionada = output<string>();
@@ -49,7 +59,39 @@ export class CalendarioDocenteComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.cargarEventosCalendario();
+    this.cargarClasesDelProfesor();
+  }
+
+  /**
+   * Trae del servidor las clases del profesor que tiene la sesión abierta.
+   */
+  private cargarClasesDelProfesor(): void {
+    const sesion = this.auth.sesion();
+    if (!sesion) return;
+
+    this.cargando.set(true);
+
+    this.docenteService.getClasesProfesor(sesion.id_usuario).subscribe({
+      next: (clases) => {
+        this.clasesAsignadas.set(
+          clases.map((clase) => ({
+            identificador: String(clase.id_evento),
+            titulo: `${clase.materia} (${clase.nombre_grupo}) - ${clase.aula ?? 'Sin aula'}`,
+            fechaInicio: `${clase.fecha}T${clase.hora_inicio}`,
+          })),
+        );
+        this.cargarEventosCalendario();
+        this.cargando.set(false);
+      },
+      error: (error) => {
+        this.cargando.set(false);
+        this.mensaje.set(
+          error.status === 0
+            ? 'No hay conexión con el servidor.'
+            : 'No fue posible cargar las clases.',
+        );
+      },
+    });
   }
 
   /**

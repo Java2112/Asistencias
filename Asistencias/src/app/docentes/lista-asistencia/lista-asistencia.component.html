@@ -35,6 +35,9 @@
   </div>
 
   <div class="pie-lista">
+    @if (mensaje()) {
+      <p class="mensaje-lista" role="status">{{ mensaje() }}</p>
+    }
     <button
       class="btn-guardar"
       (click)="guardarAsistencia()"

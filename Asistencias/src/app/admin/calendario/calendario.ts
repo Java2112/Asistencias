@@ -1,6 +1,7 @@
-import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, OnInit, inject, PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { forkJoin } from 'rxjs';
 
 import { FullCalendarModule } from '@fullcalendar/angular';
 import {
@@ -10,6 +11,8 @@ import {
 
 import dayGridPlugin from '@fullcalendar/daygrid';
 
+import { AdminService, AulaApi, GrupoApi } from '../../services/admin.service';
+import { AuthService } from '../../services/auth.service';
 import { Materia } from '../../models/materia';
 import { Profesor } from '../../models/profesor';
 import { Horario } from '../../models/horario';
@@ -25,7 +28,17 @@ import { Horario } from '../../models/horario';
   templateUrl: './calendario.html',
   styleUrl: './calendario.css'
 })
-export class Calendario {
+export class Calendario implements OnInit {
+
+  private readonly adminService = inject(AdminService);
+  private readonly auth = inject(AuthService);
+
+  readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+
+  private grupos: GrupoApi[] = [];
+  private aulas: AulaApi[] = [];
+
+  mensaje: string = '';
 
   materiasDisponibles: Materia[] = [];
 
@@ -75,6 +88,96 @@ export class Calendario {
 
   cambiarMateria(): void {
     this.profesorSeleccionadoId = null;
+  }
+
+  ngOnInit(): void {
+    this.cargarDatos();
+  }
+
+  /**
+   * Materias, profesores y horarios salen de la base. Los profesores se
+   * asocian a sus materias a través de los grupos que tienen a cargo, que es
+   * como está modelada la relación.
+   */
+  private cargarDatos(): void {
+
+    forkJoin({
+      materias: this.adminService.getMaterias(),
+      grupos: this.adminService.getGrupos(),
+      aulas: this.adminService.getAulas(),
+      directorio: this.adminService.getDirectorio('Profesor'),
+      eventos: this.adminService.getEventos()
+    }).subscribe({
+      next: ({ materias, grupos, aulas, directorio, eventos }) => {
+
+        this.grupos = grupos;
+        this.aulas = aulas;
+
+        this.materiasDisponibles = materias.map(
+          materia => new Materia(
+            materia.id_materia,
+            materia.nombre,
+            materia.descripcion ?? '',
+            materia.creditos
+          )
+        );
+
+        this.profesores = directorio.map(persona => {
+
+          const suyas = grupos
+            .filter(grupo => grupo.id_profesor === persona.id_usuario)
+            .map(grupo => grupo.id_materia);
+
+          return new Profesor(
+            persona.id_usuario,
+            persona.nombre_completo,
+            persona.correo,
+            this.materiasDisponibles.filter(
+              materia => suyas.includes(materia.id)
+            )
+          );
+
+        });
+
+        this.horarios = eventos.map(evento => {
+
+          const materia = this.materiasDisponibles.find(
+            item => item.nombre === evento.materia
+          ) ?? new Materia(0, evento.materia, '', 0);
+
+          const profesor = this.profesores.find(
+            item => item.nombre === evento.profesor
+          ) ?? new Profesor(0, evento.profesor, '');
+
+          return new Horario(
+            evento.id_evento,
+            evento.fecha,
+            evento.hora_inicio,
+            evento.hora_fin,
+            evento.aula ?? '',
+            materia,
+            profesor
+          );
+
+        });
+
+        this.actualizarCalendario();
+
+      },
+      error: () => this.mensaje = 'No fue posible cargar el calendario.'
+    });
+
+  }
+
+  /** El evento cuelga de un grupo, no de la materia directamente. */
+  private buscarGrupo(idMateria: number, idProfesor: number): GrupoApi | undefined {
+    return this.grupos.find(
+      grupo => grupo.id_materia === idMateria && grupo.id_profesor === idProfesor
+    );
+  }
+
+  private buscarAula(nombre: string): number | null {
+    return this.aulas.find(aula => aula.nombre === nombre)?.id_aula ?? null;
   }
 
   calendarOptions: CalendarOptions = {
@@ -181,28 +284,37 @@ export class Calendario {
       return;
     }
 
-    const nuevoId =
-      this.horarios.length > 0
-        ? Math.max(
-            ...this.horarios.map(h => h.id)
-          ) + 1
-        : 1;
+    const grupo = this.buscarGrupo(materia.id, profesor.id);
 
-    const nuevoHorario = new Horario(
-      nuevoId,
-      this.fecha,
-      this.horaInicio,
-      this.horaFin,
-      this.aula,
-      materia,
-      profesor
-    );
+    if (!grupo) {
+      this.mensaje = `${profesor.nombre} no tiene un grupo abierto de ${materia.nombre}.`;
+      return;
+    }
 
-    this.horarios.push(nuevoHorario);
+    const administrador = this.auth.sesion();
 
-    this.actualizarCalendario();
+    if (!administrador) {
+      this.mensaje = 'La sesión expiró. Vuelve a iniciar sesión.';
+      return;
+    }
 
-    this.limpiarFormulario();
+    this.adminService.crearEvento({
+      id_grupo: grupo.id_grupo,
+      id_profesor: profesor.id,
+      id_aula: this.buscarAula(this.aula),
+      titulo: `${materia.nombre} (${grupo.nombre_grupo})`,
+      fecha: this.fecha,
+      hora_inicio: this.horaInicio,
+      hora_fin: this.horaFin,
+      creado_por: administrador.id_usuario
+    }).subscribe({
+      next: () => {
+        this.limpiarFormulario();
+        this.cargarDatos();
+      },
+      error: (error) => this.mensaje = error.error?.mensaje ?? 'No fue posible crear el horario.'
+    });
+
   }
 
   editarHorario(horario: Horario): void {
@@ -258,30 +370,38 @@ export class Calendario {
       return;
     }
 
-    horario.fecha = this.fecha;
+    const grupo = this.buscarGrupo(materia.id, profesor.id);
 
-    horario.horaInicio = this.horaInicio;
+    if (!grupo) {
+      this.mensaje = `${profesor.nombre} no tiene un grupo abierto de ${materia.nombre}.`;
+      return;
+    }
 
-    horario.horaFin = this.horaFin;
+    this.adminService.actualizarEvento(horario.id, {
+      id_grupo: grupo.id_grupo,
+      id_profesor: profesor.id,
+      id_aula: this.buscarAula(this.aula),
+      titulo: `${materia.nombre} (${grupo.nombre_grupo})`,
+      fecha: this.fecha,
+      hora_inicio: this.horaInicio,
+      hora_fin: this.horaFin
+    }).subscribe({
+      next: () => {
+        this.cancelarEdicion();
+        this.cargarDatos();
+      },
+      error: (error) => this.mensaje = error.error?.mensaje ?? 'No fue posible guardar los cambios.'
+    });
 
-    horario.aula = this.aula;
-
-    horario.materia = materia;
-
-    horario.profesor = profesor;
-
-    this.actualizarCalendario();
-
-    this.cancelarEdicion();
   }
 
   eliminarHorario(id: number): void {
 
-    this.horarios = this.horarios.filter(
-      horario => horario.id !== id
-    );
+    this.adminService.eliminarEvento(id).subscribe({
+      next: () => this.cargarDatos(),
+      error: (error) => this.mensaje = error.error?.mensaje ?? 'No fue posible eliminar el horario.'
+    });
 
-    this.actualizarCalendario();
   }
 
   cancelarEdicion(): void {
